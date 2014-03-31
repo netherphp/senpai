@@ -10,7 +10,8 @@
 			"role":"developer" }
 	],
 	"require":{
-		"php": ">=5.4.0",
+		"php":">=5.4.0",
+		"michelf/php-markdown":"1.4.0",
 		"netherphp/surface":"dev-master"
 	},
 	"require-dev":{ },
