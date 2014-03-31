@@ -1,0 +1,27 @@
+<?php
+
+$class = $surface->Get('class');
+
+?>
+<h1 class="class-name"><?php echo $class->Name ?></h1>
+<div class="class-desciption">
+<?php echo \Michelf\MarkdownExtra::defaultTransform($class->Description), PHP_EOL; ?>
+</div>
+
+<h2>Properties</h2>
+
+<?php
+if(count($class->Properties)) { foreach($class->Properties as $prop) {
+	$surface->Set('property',$prop);
+	$surface->Area('property');
+} } else echo 'This class has no properties.';
+?>
+
+<h2>Methods</h2>
+
+<?php
+if(count($class->Methods)) { foreach($class->Methods as $meth) {
+	$surface->Set('method',$meth);
+	$surface->Area('method');
+} } else echo 'This class has no methods.';
+?>

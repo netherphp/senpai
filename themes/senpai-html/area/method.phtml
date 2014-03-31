@@ -1,0 +1,20 @@
+<?php
+
+$m = $surface->Get('method');
+
+?>
+
+<div class="method <?php echo $m->Accesss ?>">
+<?php foreach($m->Args as $argv) { ?>
+	<h3>
+		<span class="access"><?php echo $m->Access ?></span>
+		<span class="type"><?php echo $m->ReturnType ?></span>
+		<span class="name"><?php echo $m->Name ?></span>(<span class="args"><?php echo $argv ?></span>)
+	</h3>
+<?php } ?>
+
+	<div class="desc">
+<?php echo \Michelf\MarkdownExtra::defaultTransform($m->Description), PHP_EOL, PHP_EOL; ?>
+	</div>
+
+</div>
