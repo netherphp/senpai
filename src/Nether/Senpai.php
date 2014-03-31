@@ -60,6 +60,31 @@ class Senpai {
 	////////////////
 	////////////////
 
+	public function BuildTree() {
+		$tree = [
+			'\\' => (object)['Namespaces' => [], 'Classes' => []]
+		];
+
+		foreach($this->List as $class) {
+			$cur = $tree['\\'];
+			$cpath = explode('\\',dirname($class->Name));
+
+			foreach($cpath as $cp) {
+				if(!array_key_exists($cp,$cur->Namespaces))
+				$cur->Namespaces[$cp] = (object)['Namespaces' => [], 'Classes' => []];
+
+				$cur = $cur->Namespaces[$cp];
+			}
+
+			$cur->Classes[] = basename($class->Name);
+		}
+
+		return $tree;
+	}
+
+	////////////////
+	////////////////
+
 	public function SaveMarkdownOverview($filename,$doctype=self::DOC_PUBLIC) {
 		$doc = new Senpai\Output\MarkdownOverview($this,$doctype);
 
