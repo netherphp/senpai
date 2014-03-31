@@ -2,6 +2,9 @@
 
 $class = $surface->Get('class');
 
+$properties = array_merge($class->Properties,$class->StaticProperties);
+$methods = array_merge($class->Methods,$class->StaticMethods);
+
 ?>
 <div class="class">
 	<h1 class="name"><?php echo $class->Name ?></h1>
@@ -12,19 +15,19 @@ $class = $surface->Get('class');
 	<h2>Properties</h2>
 
 <?php
-if(count($class->Properties)) { foreach($class->Properties as $prop) {
+if(count($properties)) { foreach($properties as $prop) {
 	$surface->Set('property',$prop);
 	$surface->Area('property');
-} } else echo 'This class has no properties.';
+} } else echo '<div class="desc">This class has no properties.</div>';
 ?>
 
 	<h2>Methods</h2>
 
 <?php
-if(count($class->Methods)) { foreach($class->Methods as $meth) {
+if(count($methods)) { foreach($methods as $meth) {
 	$surface->Set('method',$meth);
 	$surface->Area('method');
-} } else echo 'This class has no methods.';
+} } else echo '<div class="desc">This class has no methods.</div>';
 ?>
 
 </div>

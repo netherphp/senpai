@@ -58,7 +58,9 @@ class ClassInfo extends Info {
 		};
 
 		uasort($this->Properties,$sorter);
+		uasort($this->StaticProperties,$sorter);
 		uasort($this->Methods,$sorter);
+		uasort($this->StaticMethods,$sorter);
 
 		return;
 	}

@@ -4,9 +4,9 @@ $p = $surface->Get('property');
 
 ?>
 
-<div class="property <?php echo $p->Access ?>">
+<div class="property <?php echo (($p->Static)?('static'):($p->Access)) ?>">
 	<h3>
-		<span class="access"><?php echo $p->Access ?></span>
+		<span class="access"><?php echo (($p->Static)?('static'):($p->Access)) ?></span>
 		<span class="type"><?php echo $p->Type ?></span>
 		<span class="name">$<?php echo $p->Name ?></span>
 	</h3>

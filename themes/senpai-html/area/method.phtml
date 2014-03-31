@@ -4,10 +4,10 @@ $m = $surface->Get('method');
 
 ?>
 
-<div class="method <?php echo $m->Access ?>">
+<div class="method <?php echo(($m->Static)?('static'):($m->Access)) ?>">
 <?php foreach($m->Args as $argv) { ?>
 	<h3>
-		<span class="access"><?php echo $m->Access ?></span>
+		<span class="access"><?php echo(($m->Static)?('static'):($m->Access)) ?></span>
 		<span class="type"><?php echo $m->ReturnType ?></span>
 		<span class="name"><?php echo $m->Name ?></span>(<span class="args"><?php echo $argv ?></span>)
 	</h3>
