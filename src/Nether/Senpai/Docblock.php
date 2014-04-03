@@ -40,6 +40,9 @@ class Docblock {
 				$this->Text .= "\n{$line}";
 			}
 
+			// clean up line starts from the attempted join process.
+			$this->Text = preg_replace('/^ /ms','',$this->Text);
+
 		} else {
 			if(!array_key_exists($m[1],$this->Tags))
 			$this->Tags[$m[1]] = array();
