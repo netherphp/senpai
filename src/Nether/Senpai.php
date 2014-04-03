@@ -104,7 +104,7 @@ class Senpai {
 			mkdir($dirname,0777,true);
 
 			$surface = new Nether\Surface;
-			$surface->CaptureStart();
+			$surface->Start();
 			$obj->ToMarkdown($surface);
 
 			ob_start();
