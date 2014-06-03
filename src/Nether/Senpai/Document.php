@@ -2,12 +2,19 @@
 
 namespace Nether\Senpai;
 
-use \Nether;
-
-class Docblock {
+class Document {
 
 	public $Tags = [];
 	public $Text = '';
+
+	static $Multitags = ['argv'];
+	/*//
+	@type array
+	these are the tags that a document could contain that we should accept
+	having multiples of and should therefore return an array. any tags not
+	listed here will overwrite eachother if redeclared in the same document
+	later on.
+	//*/
 
 	////////////////
 	////////////////
@@ -44,10 +51,17 @@ class Docblock {
 			$this->Text = preg_replace('/^ /ms','',$this->Text);
 
 		} else {
-			if(!array_key_exists($m[1],$this->Tags))
-			$this->Tags[$m[1]] = array();
+			if(in_array($m[1],static::$Multitags)) {
+				if(!array_key_exists($m[1],$this->Tags))
+				$this->Tags[$m[1]] = array();
 
-			$this->Tags[$m[1]][] = $m[2];
+				if(array_key_exists(2,$m)) $this->Tags[$m[1]][] = $m[2];
+				else $this->Tags[$m[1]][] = true;
+			} else {
+				if(array_key_exists(2,$m)) $this->Tags[$m[1]] = $m[2];
+				else $this->Tags[$m[1]] = true;
+			}
+
 		}
 	}
 

@@ -9,8 +9,11 @@ use \ReflectionMethod;
 
 class Senpai {
 
-	public $File;
 	public $List = [];
+	/*//
+	@type array
+	a list of all the structures parsed by the engine.
+	//*/
 
 	////////////////
 	////////////////
@@ -27,7 +30,10 @@ class Senpai {
 
 		$struct = false;
 		switch($m[1]) {
-			case 'class': { $struct = $this->NoticeClass($m[2]); break; }
+			case 'class': {
+				$struct = $this->NoticeClass($m[2]);
+				break;
+			}
 		}
 
 		if(!$struct) {
@@ -45,7 +51,7 @@ class Senpai {
 			catch(Exception $e) { return false; }
 		} else $reflect = $class;
 
-		return new Senpai\ClassInfo($this,$reflect);
+		return new Senpai\SenpaiClass($reflect);
 	}
 
 	public function NoticeMethod($method) {
@@ -85,40 +91,18 @@ class Senpai {
 	////////////////
 	////////////////
 
-	public function SaveMarkdownOverview($filename,$doctype=self::DOC_PUBLIC) {
-		$doc = new Senpai\Output\MarkdownOverview($this,$doctype);
-
-		file_put_contents($filename,$doc);
-		return;
-	}
-
 	public function SaveToDirectory($dir) {
-		if(!is_dir($dir)) mkdir($dir,0777,true);
+	/*//
+	@argv string Directory
+	save all the structures senpai has noticed to the specified directory.
+	each structure will be given its own file.
+	//*/
 
+		if(!is_dir($dir))
+		mkdir($dir,0777,true);
 
 		foreach($this->List as $obj) {
-			$filename = strtolower(sprintf('%s/%s.html',$dir,$obj->Name));
-			$dirname = dirname($filename);
-
-			$filename = preg_replace(
-				'/[\/\\\\]/',
-				DIRECTORY_SEPARATOR,
-				$filename
-			); var_dump($filename);
-
-			if(!is_dir($dirname))
-			mkdir($dirname,0777,true);
-
-			$surface = new Nether\Senpai\Surface;
-			$surface->Start();
-			$obj->ToMarkdown($surface);
-
-			ob_start();
-			$surface->Render();
-			$content = ob_get_clean();
-
-			echo "Writing file {$obj->Name}", PHP_EOL;
-			file_put_contents($filename,$content);
+			$obj->SaveToDirectory($dir);
 		}
 
 		return;

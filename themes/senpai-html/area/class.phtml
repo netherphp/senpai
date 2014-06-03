@@ -1,33 +1,59 @@
 <?php
 
+use \Nether\Senpai\ClassMember as CM;
+
 $class = $surface->Get('class');
 
-$properties = array_merge($class->Properties,$class->StaticProperties);
-$methods = array_merge($class->Methods,$class->StaticMethods);
+$properties = (object)[
+
+];
+
+$methods = (object)[
+	'public' => $class->FilterMembers((CM::IsMethod|CM::IsPublic),(CM::IsStatic)),
+	'protected' => $class->FilterMembers((CM::IsMethod|CM::IsProtected|CM::IsPrivate),(CM::IsStatic|CM::IsPublic)),
+	'static' => $class->FilterMembers((CM::IsStatic),(CM::IsProperty))
+];
 
 ?>
+
 <div class="class">
 	<h1 class="name"><?php echo $class->Name ?></h1>
 	<div class="desc">
-<?php echo \Michelf\MarkdownExtra::defaultTransform($class->Description), PHP_EOL; ?>
+<?php echo $class->ParseInfo(), PHP_EOL; ?>
 	</div>
 
 	<h2>Properties</h2>
-
-<?php
-if(count($properties)) { foreach($properties as $prop) {
-	$surface->Set('property',$prop);
-	$surface->Area('property');
-} } else echo '<div class="desc">This class has no properties.</div>';
-?>
+	<dl class="properties public">
+	</dl>
 
 	<h2>Methods</h2>
+	<dl class="methods public">
+<?php if(count($methods->public)) { foreach($methods->public as $m) { ?>
+		<?php foreach($m->Tags['argv'] as $argv) { ?>
+		<dt><?php echo $m->Name ?>(<?php echo $argv ?>)</dt>
+		<?php } ?>
+		<dd><?php echo $m->Info ?></dd>
+<?php } } else { ?>
+		<dd class="empty">This class has no public methods.</dd>
+<?php } ?>
+	</dl>
 
-<?php
-if(count($methods)) { foreach($methods as $meth) {
-	$surface->Set('method',$meth);
-	$surface->Area('method');
-} } else echo '<div class="desc">This class has no methods.</div>';
-?>
+	<dl class="methods protected">
+<?php if(count($methods->protected)) { foreach($methods->protected as $m) { ?>
+		<dt><?php echo $m->Name ?></dt>
+		<dd><?php echo $m->Info ?></dd>
+<?php } } else { ?>
+		<dd class="empty">This class has no protected or private methods.</dd>
+<?php } ?>
+	</dl>
+
+	<dl class="methods static">
+<?php if(count($methods->static)) { foreach($methods->static as $m) { ?>
+		<dt><?php echo $m->Name ?></dt>
+		<dd><?php echo $m->Info ?></dd>
+<?php } } else { ?>
+		<dd class="empty">This class has no static methods.</dd>
+<?php } ?>
+	</dl>
 
 </div>
