@@ -1,0 +1,17 @@
+<?php
+
+$methods = $surface->Get('methods');
+
+?>
+
+<?php if(count($methods)) { foreach($methods as $m) { ?>
+	<dl id="<?php echo $m->Name ?>" class="<?php echo $m->GetInfoTagString() ?>">
+	<?php foreach($m->Tags['argv'] as $argkey => $argv) { ?>
+	<dt><a href="#<?php echo $m->Name ?>"><?php echo $m->Name ?>(<?php echo $argv ?>)</a></dt>
+	<?php } ?>
+	<dd><?php echo $m->ParseInfo() ?></dd>
+	</dl>
+<?php } } else { ?>
+	<div class="empty">No methods.</div>
+<?php } ?>
+

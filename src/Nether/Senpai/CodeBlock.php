@@ -99,6 +99,25 @@ class CodeBlock {
 	////////////////
 	////////////////
 
+	public function GetInfoTagString() {
+	/*//
+	@return string
+	fetch all the tags on this code block which are kind of like flags, things
+	that can be used as css classes.
+	//*/
+
+		$output = '';
+		foreach(static::$Infotags as $tag) {
+			if(array_key_exists($tag,$this->Tags))
+			$output .= " {$tag}";
+		}
+
+		return trim($output);
+	}
+
+	////////////////
+	////////////////
+
 	protected function ReadDocument() {
 	/*//
 	parse the doc block associated with this code.
@@ -135,6 +154,11 @@ class CodeBlock {
 	////////////////
 
 	public function ParseInfo() {
+	/*//
+	@return string
+	convert the info text via markdown.
+	//*/
+
 		$text = \Michelf\MarkdownExtra::defaultTransform($this->Info);
 
 		return $text;
@@ -167,12 +191,13 @@ class CodeBlock {
 		$surface = new Nether\Surface([
 			'Theme' => 'senpai-html',
 			'ThemeRoot' => dirname(dirname(dirname(dirname(__FILE__)))).'/themes',
-			'Autocapture' => false,
-			'Autostash' => false
+			'Autostash' => false,
+			'Autocapture' => false
 		]);
 
 		$surface->Set('class',$this);
 		$output = $surface->Area('class',true);
+
 		file_put_contents($filename,$output);
 		return;
 	}
