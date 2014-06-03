@@ -1,0 +1,37 @@
+<?php
+
+ini_set('display_errors',true);
+error_reporting(E_ALL);
+
+define('APP_ROOT',dirname(dirname(__FILE__)));
+
+require(sprintf(
+	'%s/autoload.php',
+	dirname(dirname(dirname(dirname(__FILE__))))
+));
+
+$configfile = sprintf('%s/senpai.json',getcwd());
+if(!file_exists($configfile)) {
+	echo "No senpai.json found.";
+	exit(1);
+} else {
+	$config = new Nether\Object(json_decode(file_get_contents($configfile)),[
+		'SaveDirectory' => './docs',
+		'Classes' => []
+	]);
+
+//	$config->SaveDirectory = realpath($config->SaveDirectory);
+//	var_dump($config); die();
+}
+
+////////////////
+////////////////
+
+$senpai = new Nether\Senpai;
+
+foreach($config->Classes as $class)
+$senpai->Notice("class={$class}");
+
+$senpai->SaveToDirectory($config->SaveDirectory);
+
+

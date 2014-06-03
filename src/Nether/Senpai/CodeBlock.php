@@ -164,7 +164,13 @@ class CodeBlock {
 			mkdir(dirname($filename),0777,true);
 		}
 
-		$surface = Nether\Stash::Get('surface');
+		$surface = new Nether\Surface([
+			'Theme' => 'senpai-html',
+			'ThemeRoot' => dirname(dirname(dirname(dirname(__FILE__)))).'/themes',
+			'Autocapture' => false,
+			'Autostash' => false
+		]);
+
 		$surface->Set('class',$this);
 		$output = $surface->Area('class',true);
 		file_put_contents($filename,$output);
