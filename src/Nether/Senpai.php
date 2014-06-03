@@ -9,9 +9,6 @@ use \ReflectionMethod;
 
 class Senpai {
 
-	const DOC_PUBLIC = 1;
-	const DOC_DEV = 2;
-
 	public $File;
 	public $List = [];
 
@@ -21,6 +18,9 @@ class Senpai {
 	public function __construct() {
 		return;
 	}
+
+	////////////////
+	////////////////
 
 	public function Notice($what) {
 		preg_match('/^(.+?)=(.+?)$/',$what,$m);
@@ -92,7 +92,7 @@ class Senpai {
 		return;
 	}
 
-	public function SaveMarkdownFiles($dir) {
+	public function SaveToDirectory($dir) {
 		if(!is_dir($dir)) mkdir($dir,0777,true);
 
 
@@ -100,10 +100,16 @@ class Senpai {
 			$filename = strtolower(sprintf('%s/%s.html',$dir,$obj->Name));
 			$dirname = dirname($filename);
 
+			$filename = preg_replace(
+				'/[\/\\\\]/',
+				DIRECTORY_SEPARATOR,
+				$filename
+			); var_dump($filename);
+
 			if(!is_dir($dirname))
 			mkdir($dirname,0777,true);
 
-			$surface = new Nether\Surface;
+			$surface = new Nether\Senpai\Surface;
 			$surface->Start();
 			$obj->ToMarkdown($surface);
 
