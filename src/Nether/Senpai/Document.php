@@ -52,14 +52,16 @@ class Document {
 
 		} else {
 			if(in_array($m[1],static::$Multitags)) {
+				// handle tags which are allowed to occur multiple times.
 				if(!array_key_exists($m[1],$this->Tags))
 				$this->Tags[$m[1]] = array();
 
 				if(array_key_exists(2,$m)) $this->Tags[$m[1]][] = $m[2];
 				else $this->Tags[$m[1]][] = true;
 			} else {
+				// handle tags that should only occur once.
 				if(array_key_exists(2,$m)) $this->Tags[$m[1]] = $m[2];
-				else $this->Tags[$m[1]] = true;
+				else $this->Tags[$m[1]] = $m[1];
 			}
 
 		}
@@ -69,19 +71,34 @@ class Document {
 	////////////////
 
 	static function NewFromSource($lines) {
-		if(is_string($lines)) $lines = explode("\n",$text);
+		if(is_string($lines)) $lines = explode("\n",$lines);
 
-		if(count($lines) < 3)
-		return false;
+		$docblock = [];
+		$started = false;
+		for($a = 0; $a < count($lines); $a++) {
 
-		$num = 1;
-		if(preg_match('/^\/\*\/\//',trim($lines[$num]))) {
-			while(!preg_match('/\/\/\*\/$/',trim($lines[$num]))) ++$num;
-			return new self(array_slice($lines,2,($num-2)));
-		} else {
-			return false;
+			// if we have not begun recording then we need to watch for the
+			// end of the statement that declares whatever it is about.
+			if(!$started) {
+				if(preg_match('/[\{\;]$/',trim($lines[$a]))) {
+
+					// the line after the end declaration should be the open
+					// comment tag. if not, bail.
+					if(!preg_match('/^\/\*\/\//',trim($lines[++$a]))) {
+						break;
+					} else {
+						$started = true;
+						continue;
+					}
+				}
+			} else {
+				// save lines from the docblock until we hit the end of it.
+				if(preg_match('/\/\/\*\/$/',trim($lines[$a]))) break;
+				else $docblock[] = $lines[$a];
+			}
 		}
 
+		return new Document($docblock);
 	}
 
 }

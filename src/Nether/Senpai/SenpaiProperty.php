@@ -5,16 +5,9 @@ namespace Nether\Senpai;
 class SenpaiProperty extends ClassMember {
 
 	public function Examine() {
-		$this->PopulateFlags();
-
-		// so this bit of bullshit here is because of a lack of planning
-		// internally of php.
-		$class = $this->Reflector->getDeclaringClass();
-		$this->File = $class->getFilename();
-		$this->LineStart = $class->getStartLine();
-		$this->LineStop = $class->getEndLine();
-		$this->FindThisPropertyDamnit();
-
+		$r = $this->Reflector;
+		$this->LocateSenpaiDoc();
+		$this->DetermineMemberTags();
 		return;
 	}
 
@@ -23,46 +16,37 @@ class SenpaiProperty extends ClassMember {
 		if(!$this->Info)
 		$this->Info = 'This property has no description.';
 
-		if(!array_key_exists('type',$this->Tags))
-		$this->Tags['type'] = 'void';
+		if(!$this->HasTag('type')) $this->AddTag('type','void');
 
 		return;
 	}
 
-	protected function FindThisPropertyDamnit() {
+	////////////////
+	////////////////
+
+	protected function LocateSenpaiDoc() {
 	/*//
-	because ReflectionProperty doesn't have the nice methods like
-	ReflectionClass and ReflectionMethods have... arses. seriously, wtf. yall
-	are tanking my zen over here.
+	since senpai documents are contained inside the block they are defined in
+	and properties have no blocks, we have to zip to the end of the property
+	and see if there is one starting right after it. if we find one we update
+	the line number the property ends on for extraction later.
 	//*/
 
-		$filedata = $this->ExtractFromFile();
+		$fp = fopen($this->File,'r');
 
-		$pattern = "/^(?:[^\s]+ )?(?:[^\s]+)[\s\t]+\\\${$this->Name}/";
-		// static access $name;
+		// scroll to where the property ends.
+		for($num = 1; $num <= $this->LineEnd; $num++)
+		fgets($fp);
 
-		foreach($filedata as $num => $line) {
-			// echo "{$num}: {$line}", PHP_EOL;
-			if(preg_match($pattern,trim($line))) {
-				$this->LineStart += $num;
-				break;
-			}
+		// see if we have a senpai docblock there.
+		if(preg_match('/^\/\*\/\//',trim(fgets($fp)))) {
+			while(!preg_match('/\/\/\*\/$/',fgets($fp)))
+			++$num;
+
+			$this->LineEnd = $num + 1;
 		}
 
-		// include the senpai docblock as part of the property, since it is part
-		// of the classes and methods.
-		$endoffset = 1;
-		if(preg_match('/^\/\*\/\//',trim($filedata[++$num]))) {
-			while(!preg_match('/\/\/\*\/$/',trim($filedata[$num]))) {
-				// echo "{$num}: {$line}", PHP_EOL;
-				++$num; ++$endoffset;
-			}
-
-			$this->LineStop = $this->LineStart + $endoffset;
-		} else {
-			$this->LineStop = $this->LineStart;
-		}
-
+		fclose($fp);
 		return;
 	}
 

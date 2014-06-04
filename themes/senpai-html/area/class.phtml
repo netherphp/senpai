@@ -1,28 +1,46 @@
 <?php
 
-use \Nether\Senpai\ClassMember as CM;
 $class = $surface->Get('class');
 
 ?>
 
-<div class="class">
-	<h1 class="name"><?php echo $class->Name ?></h1>
-	<div class="desc">
-<?php echo $class->ParseInfo(), PHP_EOL; ?>
-	</div>
+<h1><?php echo $class->Name ?></h1>
+<?php echo $class->GetInfoParsed() ?>
 
-	<div class="members public">
-		<h2>Public Properties</h2>
-<?php
-$surface->Set('properties',$class->FilterMembers((CM::IsPublic),(CM::IsStatic|CM::IsMethod)));
-$surface->Area('properties');
-?>
+<?php if(count($class->Traits)) { ?>
+<h2>Traits</h2>
+<div class="traits">
+<?php foreach($class->Traits as $t) { ?>
+	<dl>
+		<dt><?php echo $t->Name ?></dt>
+		<dd><?php echo $t->GetInfoParsed() ?></dd>
+	</dl>
+<?php } ?>
+</div>
+<?php } ?>
 
-		<h2>Public Methods</h2>
-<?php
-$surface->Set('methods',$class->FilterMembers((CM::IsPublic),(CM::IsStatic|CM::IsProperty)));
-$surface->Area('methods');
-?>
+<h2>Properties</h2>
+<div class="properties">
+<?php if(count($class->Properties)) { foreach($class->Properties as $p) { ?>
+	<dl>
+		<dt><?php echo $p->Name ?></dt>
+		<dd><?php echo $p->GetTag('type'), ' ', $p->GetInfoTagString() ?></dd>
+		<dd><?php echo $p->GetInfoParsed() ?></dd>
+	</dl>
+<?php } } else { ?>
+	<div class="empty">This class has no properties.</div>
+<?php } ?>
+</div>
 
-	</div>
+<h2>Methods</h2>
+<div class="methods">
+<?php if(count($class->Methods)) { foreach($class->Methods as $m) { ?>
+	<dl>
+		<dt><?php echo $m->Name ?></dt>
+		<dd><?php echo $m->GetTag('return'), ' ', $m->GetInfoTagString() ?></dd>
+		<dd><?php echo $m->GetInfoParsed() ?></dd>
+	</dl>
+<?php } } else { ?>
+	<div class="empty">This class has no methods.</div>
+<?php } ?>
 </div>

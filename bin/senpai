@@ -16,22 +16,22 @@ if(!file_exists($configfile)) {
 	exit(1);
 } else {
 	$config = new Nether\Object(json_decode(file_get_contents($configfile)),[
+		'Theme' => 'senpai-html',
+		'ThemeRoot' => dirname(dirname(__FILE__)).'/themes',
 		'SaveDirectory' => './docs',
+		'LoadDirectory' => './',
 		'Classes' => []
 	]);
-
-//	$config->SaveDirectory = realpath($config->SaveDirectory);
-//	var_dump($config); die();
 }
 
 ////////////////
 ////////////////
 
-$senpai = new Nether\Senpai;
+$senpai = (new Nether\Senpai($config->LoadDirectory))
+->SetTheme($config->Theme)
+->SetThemeRoot($config->ThemeRoot);
 
 foreach($config->Classes as $class)
-$senpai->Notice("class={$class}");
+$senpai->Notice($class);
 
 $senpai->SaveToDirectory($config->SaveDirectory);
-
-

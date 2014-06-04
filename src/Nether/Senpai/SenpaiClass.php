@@ -2,39 +2,49 @@
 
 namespace Nether\Senpai;
 
+use \Nether;
+
 class SenpaiClass extends CodeBlock {
 
-	public $Members = [];
-	/*//
-	@type array
-	a list of all the properties and methods in this class.
-	//*/
+	public $Extends = [];
+	public $Properties = [];
+	public $Methods = [];
+	public $Traits = [];
 
-	protected function Examine() {
-	/*//
-	@override
-	//*/
+	////////////////
+	////////////////
 
-		foreach($this->Reflector->getProperties() as $property) {
-			if($property->getDeclaringClass()->getName() == $this->Reflector->getName())
-			$this->Members[] = new SenpaiProperty($property);
+	public function Examine() {
+		$r = $this->Reflector;
+
+		if($r->isFinal()) $this->AddTag('final');
+		if($r->isAbstract()) $this->AddTag('abstract');
+		if($r->isTrait()) $this->AddTag('trait');
+
+		$this->Extends = $r->getParentClassNameList();
+
+		foreach($r->getTraits() as $trait) {
+			$this->Traits[$trait->getName()] = new SenpaiClass($trait);
 		}
 
-		foreach($this->Reflector->getMethods() as $method) {
-			if($method->getDeclaringClass()->getName() == $this->Reflector->getName())
-			$this->Members[] = new SenpaiMethod($method);
+		foreach($r->getProperties() as $property) {
+			$this->Properties[$property->getName()] = new SenpaiProperty($property);
+		}
+
+		foreach($r->getMethods() as $method) {
+			$this->Methods[$method->getName()] = new SenpaiMethod($method);
 		}
 
 		return;
 	}
 
-	protected function ExamineTags() {
-	/*//
-	@override
-	//*/
+	public function ExamineTags() {
 
-		if(!$this->Info)
-		$this->Info = 'This class has no description set.';
+		if(!$this->Info) {
+			if($this->HasTag('trait')) $this->Info = 'This trait has no description.';
+			else $this->Info = 'This class has no description.';
+		}
+
 
 		return;
 	}
@@ -42,41 +52,31 @@ class SenpaiClass extends CodeBlock {
 	////////////////
 	////////////////
 
-	public function GetMembers($filter,$bitmask=false) {
-	/*//
-	@argv int FlagFilter, bool UseAsBitmask
-	fetch class members fitting the filter, a bitmask of constants from the
-	ClassMember class.
-	//*/
+	public function Save($senpai,$dir) {
 
-		$output = [];
-		foreach($this->Members as $member) {
-			if($bitmask) {
-				if($member->Flags & $filter)
-				$output[$member->Name] = $member;
-			} else {
-				if($member->Flags == $filter)
-				$output[$member->Name] = $member;
-			}
-		}
+		$filename = preg_replace('/[\\\\\/]/',DIRECTORY_SEPARATOR,sprintf(
+			'%s/%s.html',
+			$dir,
+			strtolower($this->Name)
+		));
 
-		ksort($output);
-		return $output;
-	}
+		if(!is_dir(dirname($filename)))
+		mkdir(dirname($filename),0777,true);
 
-	public function FilterMembers($is,$not) {
-	/*//
-	@argv int Is, int Not
-	//*/
+		$surface = new Nether\Surface([
+			'Theme' => $senpai->Theme,
+			'ThemeRoot' => $senpai->ThemeRoot,
+			'Autocapture' => false,
+			'Autostash' => false
+		]);
 
-		$output = [];
-		foreach($this->Members as $m) {
-			if(($m->Flags & $is) && !($m->Flags & $not) && !array_key_exists('skipdoc',$m->Tags))
-			$output[$m->Name] = $m;
-		}
+		$surface->Set('class',$this);
+		file_put_contents(
+			$filename,
+			$surface->Area('class',true)
+		);
 
-		ksort($output);
-		return $output;
+		return;
 	}
 
 }

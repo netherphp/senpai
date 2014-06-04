@@ -6,69 +6,55 @@ use \Nether;
 
 class CodeBlock {
 
+	public $Reflector;
+
 	public $Name;
-	/*//
-	@type string
-	the name or title of the code block. (e.g. a class name or function name).
-	//*/
-
-	public $Info;
-	/*//
-	@type string
-	the documentation info from the code in markdown.
-	//*/
-
-	public $Tags = [];
-	/*//
-	@type array
-	a list of all the at-tags associated with this code block.
-	//*/
-
 	public $File;
-	/*//
-	@type string
-	the path to the file this block is contained in.
-	//*/
+	public $LineBegin;
+	public $LineEnd;
+	public $Tags = [];
+	public $Info;
 
-	public $LineStart = 0;
-	/*//
-	@type int
-	the line number of the file this block starts on.
-	//*/
-
-	public $LineStop = 0;
-	/*//
-	@type int
-	the line number of the file this block ends on.
-	//*/
-
-	protected $Reflector;
-	/*//
-	the php reflection object to describe this block.
-	//*/
-
-	static $Infotags = ['deprecated'];
+	public $Infotags = [
+		'deprecated','todo',
+		'trait','abstract','final',
+		'public','protected','private','static'
+	];
 
 	////////////////
 	////////////////
 
-	public function __construct($reflect) {
-		$this->Reflector = $reflect;
+	public function __construct($reflector) {
+		$this->Reflector = $reflector;
 
-		$this->Name = $reflect->getName();
+		$this->Name = $reflector->getName();
+		$this->File = $reflector->getFileName();
+		$this->LineBegin = $reflector->getStartLine();
+		$this->LineEnd = $reflector->getEndLine();
 
-		if(method_exists($reflect,'getFilename'))
-		$this->File = $reflect->getFilename();
-
-		if(method_exists($reflect,'getStartLine'))
-		$this->LineStart = $reflect->getStartLine();
-
-		if(method_exists($reflect,'getEndLine'))
-		$this->LineStop = $reflect->getEndLine();
+		echo "[{$reflector->getPrettyName()}]", PHP_EOL;
 
 		$this->Examine();
-		$this->ReadDocument();
+		$this->ReadSenpaiBlock();
 		$this->ExamineTags();
+		return;
+	}
+
+	////////////////
+	////////////////
+
+	public function Examine() {
+	/*//
+	@generic
+	//*/
+
+		return;
+	}
+
+	public function ExamineTags() {
+	/*//
+	@generic
+	//*/
 
 		return;
 	}
@@ -76,59 +62,53 @@ class CodeBlock {
 	////////////////
 	////////////////
 
-	protected function Examine() {
-	/*//
-	@template
-	code to examine the current code block with. this should be overriden by
-	child classes for specific types of code blocks.
-	//*/
+	public function AddTag($name,$value=null) {
+		if(!$value) $value = $name;
 
-		return;
+		$this->Tags[$name] = $value;
+
+		return $this;
 	}
 
-	protected function ExamineTags() {
-	/*//
-	@template
-	code to examine the tags from the document with. this should be overridden
-	by child classes for specific types of code blocks.
-	//*/
-
-		return;
+	public function HasTag($name) {
+		return array_key_exists($name,$this->Tags);
 	}
 
-	////////////////
-	////////////////
+	public function GetTag($name) {
+		if(array_key_exists($name,$this->Tags)) return $this->Tags[$name];
+		else return null;
+	}
 
-	public function GetInfoTagString() {
-	/*//
-	@return string
-	fetch all the tags on this code block which are kind of like flags, things
-	that can be used as css classes.
-	//*/
+	public function GetInfoTags() {
 
-		$output = '';
-		foreach(static::$Infotags as $tag) {
-			if(array_key_exists($tag,$this->Tags))
-			$output .= " {$tag}";
-		}
+		$output = [];
 
-		return trim($output);
+		foreach($this->Infotags as $name)
+		if($this->HasTag($name))
+		$output[$name] = $this->GetTag($name);
+
+		return $output;
+	}
+
+	public function GetInfoTagString($join=' ') {
+		return implode($join,array_keys($this->GetInfoTags()));
+	}
+
+	public function GetInfoParsed() {
+		return \Michelf\MarkdownExtra::defaultTransform($this->Info);
 	}
 
 	////////////////
 	////////////////
 
-	protected function ReadDocument() {
-	/*//
-	parse the doc block associated with this code.
-	//*/
+	public function ReadSenpaiBlock() {
 
 		$doc = Document::NewFromSource($this->ExtractFromFile());
 
-		if($doc) {
-			$this->Tags = $doc->Tags;
-			$this->Info = $doc->Text;
-		}
+		$this->Info = $doc->Text;
+
+		foreach($doc->Tags as $tag => $tval)
+		$this->AddTag($tag,$tval);
 
 		return;
 	}
@@ -143,63 +123,23 @@ class CodeBlock {
 	fetch a slice of a file.
 	//*/
 
-		return array_slice(
-			file($this->File,FILE_IGNORE_NEW_LINES),
-			($this->LineStart - 1),
-			($this->LineStop - 1)
-		);
+		$output = '';
+		$num = 1;
+		$fp = fopen($this->File,'r');
+
+		// seek to the beginning of the code we want.
+		while($num++ < $this->LineBegin)
+		fgets($fp);
+
+		// read until the end of the code we want.
+		while($num++ <= ($this->LineEnd+1))
+		$output .= fgets($fp);
+
+		fclose($fp);
+		return $output;
 	}
 
 	////////////////
 	////////////////
-
-	public function ParseInfo() {
-	/*//
-	@return string
-	convert the info text via markdown.
-	//*/
-
-		$text = \Michelf\MarkdownExtra::defaultTransform($this->Info);
-
-		return $text;
-	}
-
-	////////////////
-	////////////////
-
-	public function SaveToDirectory($basedir) {
-	/*//
-	@argv string BaseDirectory
-	save this structure to disk. it will be placed in a subfolder based on the
-	namespace of this class.
-	//*/
-
-		$filename = preg_replace(
-			'/[\\\\\/]/',
-			DIRECTORY_SEPARATOR,
-			sprintf(
-				'%s/%s.html',
-				$basedir,
-				strtolower($this->Name)
-			)
-		);
-
-		if(!is_dir(dirname($filename))) {
-			mkdir(dirname($filename),0777,true);
-		}
-
-		$surface = new Nether\Surface([
-			'Theme' => 'senpai-html',
-			'ThemeRoot' => dirname(dirname(dirname(dirname(__FILE__)))).'/themes',
-			'Autostash' => false,
-			'Autocapture' => false
-		]);
-
-		$surface->Set('class',$this);
-		$output = $surface->Area('class',true);
-
-		file_put_contents($filename,$output);
-		return;
-	}
 
 }

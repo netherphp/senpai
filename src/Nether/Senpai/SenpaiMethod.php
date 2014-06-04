@@ -5,7 +5,8 @@ namespace Nether\Senpai;
 class SenpaiMethod extends ClassMember {
 
 	public function Examine() {
-		$this->PopulateFlags();
+		$r = $this->Reflector;
+		$this->DetermineMemberTags();
 		return;
 	}
 
@@ -14,11 +15,8 @@ class SenpaiMethod extends ClassMember {
 		if(!$this->Info)
 		$this->Info = 'This method has no description.';
 
-		if(!array_key_exists('argv',$this->Tags))
-		$this->Tags['argv'] = ['void'];
-
-		if(!array_key_exists('return',$this->Tags))
-		$this->Tags['return'] = 'void';
+		if(!$this->HasTag('argv')) $this->AddTag('argv',['void']);
+		if(!$this->HasTag('return')) $this->AddTag('return','void');
 
 		return;
 	}
