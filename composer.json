@@ -12,7 +12,8 @@
 	"require":{
 		"php":">=5.4.0",
 		"michelf/php-markdown":"1.*",
-		"netherphp/surface":"dev-master"
+		"netherphp/surface":"dev-master",
+		"andrewsville/php-token-reflection","*"
 	},
 	"require-dev":{ },
 	"autoload":{
