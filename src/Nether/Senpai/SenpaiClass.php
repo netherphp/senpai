@@ -29,12 +29,12 @@ class SenpaiClass extends CodeBlock {
 		}
 
 		foreach($r->getProperties() as $property) {
-			$p = new SenpaiProperty($property);
+			$p = new SenpaiProperty($this,$property);
 			if(!$p->HasTag('skipdoc')) $this->Properties[$p->Name] = $p;
 		}
 
 		foreach($r->getMethods() as $method) {
-			$m = new SenpaiMethod($method);
+			$m = new SenpaiMethod($this,$method);
 			if(!$m->HasTag('skipdoc')) $this->Methods[$m->Name] = $m;
 		}
 

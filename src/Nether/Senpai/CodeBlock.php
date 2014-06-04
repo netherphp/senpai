@@ -16,8 +16,8 @@ class CodeBlock {
 	public $Info;
 
 	public $Infotags = [
-		'deprecated','todo',
-		'trait','abstract','final',
+		'deprecated','todo','override','undocumented',
+		'trait','abstract','final','inherited',
 		'public','protected','private','static'
 	];
 
@@ -37,6 +37,7 @@ class CodeBlock {
 		$this->Examine();
 		$this->ReadSenpaiBlock();
 		$this->ExamineTags();
+
 		ksort($this->Tags);
 		return;
 	}

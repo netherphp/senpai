@@ -7,11 +7,11 @@ class SenpaiProperty extends ClassMember {
 	public function Examine() {
 		$r = $this->Reflector;
 		$this->LocateSenpaiDoc();
-		$this->DetermineMemberTags();
 		return;
 	}
 
 	public function ExamineTags() {
+		$this->DetermineMemberTags();
 
 		if(!$this->Info)
 		$this->Info = 'This property has no description.';
