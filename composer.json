@@ -13,7 +13,7 @@
 		"php":">=5.4.0",
 		"michelf/php-markdown":"1.*",
 		"netherphp/surface":"dev-master",
-		"andrewsville/php-token-reflection","dev-master"
+		"andrewsville/php-token-reflection":"1.3.*"
 	},
 	"require-dev":{ },
 	"autoload":{
