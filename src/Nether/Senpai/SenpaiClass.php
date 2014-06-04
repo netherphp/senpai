@@ -24,15 +24,18 @@ class SenpaiClass extends CodeBlock {
 		$this->Extends = $r->getParentClassNameList();
 
 		foreach($r->getTraits() as $trait) {
-			$this->Traits[$trait->getName()] = new SenpaiClass($trait);
+			$t = new SenpaiClass($trait);
+			if(!$t->HasTag('skipdoc')) $this->Traits[$t->Name] = $t;
 		}
 
 		foreach($r->getProperties() as $property) {
-			$this->Properties[$property->getName()] = new SenpaiProperty($property);
+			$p = new SenpaiProperty($property);
+			if(!$p->HasTag('skipdoc')) $this->Properties[$p->Name] = $p;
 		}
 
 		foreach($r->getMethods() as $method) {
-			$this->Methods[$method->getName()] = new SenpaiMethod($method);
+			$m = new SenpaiMethod($method);
+			if(!$m->HasTag('skipdoc')) $this->Methods[$m->Name] = $m;
 		}
 
 		return;
@@ -45,8 +48,55 @@ class SenpaiClass extends CodeBlock {
 			else $this->Info = 'This class has no description.';
 		}
 
-
+		sort($this->Traits);
+		ksort($this->Properties);
+		ksort($this->Methods);
 		return;
+	}
+
+	////////////////
+	////////////////
+
+	public function GetMembersWithTags($type,$tags) {
+
+		if($type == 'method') $list = $this->Methods;
+		else $list = $this->Properties;
+
+		$output = [];
+
+		foreach($tags as $tag) {
+			foreach($list as $m) {
+				$ok = true;
+
+				if(is_array($tag)) {
+					foreach($tag as $t) {
+						if($m->HasTag($t)) {
+							$ok = true;
+							break;
+						} else {
+							$ok = false;
+						}
+					}
+				} else {
+					if(!$m->HasTag($tag))
+					$ok = false;
+				}
+
+				if($ok)
+				$output[] = $m;
+			}
+
+		}
+
+		return $output;
+	}
+
+	public function GetMethodsWithTags($tags) {
+		return $this->GetMembersWithTags('method',$tags);
+	}
+
+	public function GetPropertiesWithTags($tags) {
+		return $this->GetMembersWithTags('property',$tags);
 	}
 
 	////////////////

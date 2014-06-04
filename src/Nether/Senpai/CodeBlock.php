@@ -37,6 +37,7 @@ class CodeBlock {
 		$this->Examine();
 		$this->ReadSenpaiBlock();
 		$this->ExamineTags();
+		ksort($this->Tags);
 		return;
 	}
 
