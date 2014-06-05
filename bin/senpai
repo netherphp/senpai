@@ -26,6 +26,31 @@ if(!file_exists($configfile)) {
 	]);
 }
 
+$config->LoadDirectory = realpath($config->LoadDirectory);
+if(!$config->LoadDirectory) {
+	echo "Unable to find requested load directory.", PHP_EOL;
+	exit(1);
+}
+
+print_r($config);
+
+/*
+	"Classes": [
+		"Nether\\Cache",
+		"Nether\\Cache\\DriverInterface",
+		"Nether\\Cache\\Appcache",
+		"Nether\\Cache\\Memcache",
+		"Nether\\Cache\\Diskcache",
+		"Nether\\Stash",
+		"Nether\\Senpai",
+		"Nether\\Senpai\\CodeBlock",
+		"Nether\\Senpai\\SenpaiClass",
+		"Nether\\Senpai\\ClassMember",
+		"Nether\\Senpai\\SenpaiMethod",
+		"Nether\\Surface"
+	]
+*/
+
 ////////////////
 ////////////////
 
@@ -37,8 +62,12 @@ $senpai = (new Nether\Senpai($config->LoadDirectory))
 ->SetTheme($config->Theme)
 ->SetThemeRoot($config->ThemeRoot);
 
-foreach($config->Classes as $class)
-$senpai->Notice($class);
+if(count($config->Classes)) {
+	foreach($config->Classes as $class)
+	$senpai->Notice($class);
+} else {
+	$senpai->NoticeAll();
+}
 
 $senpai
 ->SaveToDirectory($config->SaveDirectory,$config->UseFullTheme)

@@ -40,7 +40,7 @@ class SenpaiProperty extends ClassMember {
 
 		// see if we have a senpai docblock there.
 		if(preg_match('/^\/\*\/\//',trim(fgets($fp)))) {
-			while(!preg_match('/\/\/\*\/$/',fgets($fp)))
+			while(!preg_match('/\/\/\*\/$/',trim(fgets($fp))) && !feof($fp))
 			++$num;
 
 			$this->LineEnd = $num + 1;

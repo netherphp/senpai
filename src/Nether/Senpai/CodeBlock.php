@@ -133,7 +133,7 @@ class CodeBlock {
 		fgets($fp);
 
 		// read until the end of the code we want.
-		while($num++ <= ($this->LineEnd+1))
+		while($num++ <= ($this->LineEnd+1) && !feof($fp))
 		$output .= fgets($fp);
 
 		fclose($fp);

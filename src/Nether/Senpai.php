@@ -38,7 +38,59 @@ class Senpai {
 	////////////////
 
 	public function Notice($what) {
-		$this->List[] = new Senpai\SenpaiClass($this->Scanner->getClass($what));
+		if(preg_match('/\\\\$/',trim($what))) {
+			$this->NoticeNamespace(trim($what,'\\ '));
+
+/*
+	// this requires a fix that is pending pull. if it is never pulled i'll
+	// just fork and composer replace the package.
+
+	https://github.com/Andrewsville/PHP-Token-Reflection/pull/54/files
+
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/bobmajdakjr/PHP-Token-Reflection"
+        }
+    ],
+    "require": {
+    	"andrewsville\/php-token-reflection": "dev-master as 1.3.1"
+    }
+*/
+
+    		if(!method_exists($this->Scanner,'getNamespaces'))
+    		throw new \Exception('You are running the stock version of the tokeniser. I have submitted a pull request to the project to add the method that enables recursive namespace listing.');
+
+			$nslist = $this->Scanner->getNamespaces();
+			foreach($nslist as $ns) {
+				if(strpos($ns->getName(),$what) === 0) {
+					$this->NoticeNamespace($ns->getName());
+				}
+			}
+		} else {
+			$this->List[] = new Senpai\SenpaiClass($this->Scanner->getClass($what));
+		}
+
+		return $this;
+	}
+
+	public function NoticeAll() {
+		foreach($this->Scanner->getClasses() as $class)
+		$this->List[] = new Senpai\SenpaiClass($class);
+
+		return $this;
+	}
+
+	public function NoticeNamespace($ns) {
+
+		$nsref = $this->Scanner->getNamespace($ns);
+
+		foreach($nsref->getClasses() as $class)
+		$this->List[] = new Senpai\SenpaiClass($class);
+
+//		foreach($nsref->getNamespaces() as $subspace)
+//		$this->NoticeNamespace($ns);
+
 		return $this;
 	}
 
