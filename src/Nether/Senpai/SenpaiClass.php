@@ -115,42 +115,24 @@ class SenpaiClass extends CodeBlock {
 		if(!is_dir(dirname($filename)))
 		mkdir(dirname($filename),0777,true);
 
-		$surface = new Nether\Surface([
-			'Theme' => $senpai->Theme,
-			'ThemeRoot' => $senpai->ThemeRoot,
-			'Autocapture' => false,
-			'Autostash' => false
-		]);
-
-		$surface->Set('path-backpedal',str_repeat('../',$deep));
+		$surface = $senpai
+		->GetSurface()
+		->Set('path-backpedal',str_repeat('../',$deep));
 
 		if($full) {
 			$surface->Start();
 			$surface->Set('class',$this);
 			$surface->Area('class');
-
 			$output = $surface->Render(true);
-
-			file_put_contents(
-				$filename,
-				$output
-			);
 		} else {
-			$surface = new Nether\Surface([
-				'Theme' => $senpai->Theme,
-				'ThemeRoot' => $senpai->ThemeRoot,
-				'Autocapture' => false,
-				'Autostash' => false
-			]);
-
 			$surface->Set('class',$this);
-			file_put_contents(
-				$filename,
-				$surface->Area('class',true)
-			);
+			$output = $surface->Area('class',true);
 		}
 
-
+		file_put_contents(
+			$filename,
+			$output
+		);
 
 		return;
 	}

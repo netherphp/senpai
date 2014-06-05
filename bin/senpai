@@ -40,4 +40,6 @@ $senpai = (new Nether\Senpai($config->LoadDirectory))
 foreach($config->Classes as $class)
 $senpai->Notice($class);
 
-$senpai->SaveToDirectory($config->SaveDirectory,$config->UseFullTheme);
+$senpai
+->SaveToDirectory($config->SaveDirectory,$config->UseFullTheme)
+->SaveIndex($config->SaveDirectory,$config->UseFullTheme);

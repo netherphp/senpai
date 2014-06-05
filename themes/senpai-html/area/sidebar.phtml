@@ -12,6 +12,10 @@ $Link = function($name) use($surface) {
 
 <div class="contentbox">
 	<dl>
+		<dt>Main</dt>
+		<dd><a href="<?php $surface->Show('path-backpedal') ?>index.html">Home</a></dd>
+	</dl>
+	<dl>
 		<dt>Classes</dt>
 <?php foreach(Nether\Stash::Get('code-index') as $class) { ?>
 		<dd><a href="<?php echo $Link($class->Name) ?>"><?php echo $class->Name ?></a></dd>
