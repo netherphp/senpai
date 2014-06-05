@@ -17,8 +17,7 @@ class CodeBlock {
 
 	public $Infotags = [
 		'deprecated','todo','override','undocumented',
-		'trait','abstract','final','inherited',
-		'public','protected','private','static'
+		'trait','abstract','final','inherited'
 	];
 
 	////////////////

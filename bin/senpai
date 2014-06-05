@@ -16,16 +16,22 @@ if(!file_exists($configfile)) {
 	exit(1);
 } else {
 	$config = new Nether\Object(json_decode(file_get_contents($configfile)),[
+		"UseFullTheme" => false,
 		'Theme' => 'senpai-html',
 		'ThemeRoot' => dirname(dirname(__FILE__)).'/themes',
 		'SaveDirectory' => './docs',
 		'LoadDirectory' => './',
-		'Classes' => []
+		'Classes' => [],
+		'Title' => 'API Documentation'
 	]);
 }
 
 ////////////////
 ////////////////
+
+Nether\Option::Set([
+	'app-name' => $config->Title
+]);
 
 $senpai = (new Nether\Senpai($config->LoadDirectory))
 ->SetTheme($config->Theme)
@@ -34,4 +40,4 @@ $senpai = (new Nether\Senpai($config->LoadDirectory))
 foreach($config->Classes as $class)
 $senpai->Notice($class);
 
-$senpai->SaveToDirectory($config->SaveDirectory);
+$senpai->SaveToDirectory($config->SaveDirectory,$config->UseFullTheme);

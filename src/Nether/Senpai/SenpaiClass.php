@@ -102,7 +102,9 @@ class SenpaiClass extends CodeBlock {
 	////////////////
 	////////////////
 
-	public function Save($senpai,$dir) {
+	public function Save($senpai,$dir,$full=false) {
+
+		$deep = count(explode('\\',$this->Name)) - 1;
 
 		$filename = preg_replace('/[\\\\\/]/',DIRECTORY_SEPARATOR,sprintf(
 			'%s/%s.html',
@@ -120,11 +122,35 @@ class SenpaiClass extends CodeBlock {
 			'Autostash' => false
 		]);
 
-		$surface->Set('class',$this);
-		file_put_contents(
-			$filename,
-			$surface->Area('class',true)
-		);
+		$surface->Set('path-backpedal',str_repeat('../',$deep));
+
+		if($full) {
+			$surface->Start();
+			$surface->Set('class',$this);
+			$surface->Area('class');
+
+			$output = $surface->Render(true);
+
+			file_put_contents(
+				$filename,
+				$output
+			);
+		} else {
+			$surface = new Nether\Surface([
+				'Theme' => $senpai->Theme,
+				'ThemeRoot' => $senpai->ThemeRoot,
+				'Autocapture' => false,
+				'Autostash' => false
+			]);
+
+			$surface->Set('class',$this);
+			file_put_contents(
+				$filename,
+				$surface->Area('class',true)
+			);
+		}
+
+
 
 		return;
 	}

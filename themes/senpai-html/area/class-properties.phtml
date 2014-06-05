@@ -1,0 +1,22 @@
+<?php
+
+$properties = $surface->Get('properties');
+
+?>
+
+<?php if(count($properties)) { foreach($properties as $p) { ?>
+	<dl id="property-<?php echo strtolower($p->Name) ?>" class="property <?php echo $p->GetInfoTagString() ?>">
+	<dt>
+		<span class="tag type"><?php echo $p->GetTag('type') ?></span>
+		<span class="tag access"><?php echo $p->GetTag('access') ?></span>
+		<?php foreach($p->GetInfoTags() as $tag => $tval) { ?>
+		<span class="tag <?php echo $tag ?>" title="<?php echo htmlentities($tval) ?>"><?php echo $tag ?></span>
+		<?php } ?>
+		<a href="#property-<?php echo strtolower($p->Name) ?>"><?php echo(($p->HasTag('static'))?('::'):('->')) ?><span class="name">$<?php echo $p->Name ?></span>;</a>
+	</dt>
+	<dd><?php echo $p->GetInfoParsed() ?></dd>
+	</dl>
+<?php } } else { ?>
+	<div class="empty">This class has no properties.</div>
+<?php } ?>
+

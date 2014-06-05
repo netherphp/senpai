@@ -2,45 +2,66 @@
 
 $class = $surface->Get('class');
 
+$imeth = $class->GetMethodsWithTags([['public','protected','private']]);
+$iprop = $class->GetPropertiesWithTags([['public','protected','private']]);
+$smeth = $class->GetMethodsWithTags(['static']);
+$sprop = $class->GetPropertiesWithTags(['static']);
+
+$surface->Set('page-title',"Class {$class->Name}");
+
 ?>
 
-<h1><?php echo $class->Name ?></h1>
-<?php echo $class->GetInfoParsed() ?>
-
-<?php if(count($class->Traits)) { ?>
-<h2>Traits</h2>
-<div class="traits">
-<?php foreach($class->Traits as $t) { ?>
-	<dl>
-		<dt><?php echo $t->Name ?></dt>
-		<dd><?php echo $t->GetInfoParsed() ?></dd>
-	</dl>
-<?php } ?>
-</div>
+<h1>class <?php echo $class->Name ?> {</h1>
+<div class="senpai class">
+<?php if(count($class->Extends) || count($class->Traits)) { ?>
+	<ul class="extends">
+<?php foreach($class->Extends as $extend) { ?><li>extends <span class="name"><?php echo $extend ?></span></li><?php } ?>
+<?php foreach($class->Traits as $trait) { ?><li>uses <span class="name"><?php echo $trait ?></span></li><?php } ?>
+	</ul>
 <?php } ?>
 
-<h2>Properties</h2>
-<div class="properties">
-<?php if(count($class->Properties)) { foreach($class->Properties as $p) { ?>
-	<dl>
-		<dt><?php echo $p->Name ?></dt>
-		<dd><?php echo $p->GetTag('type'), ' ', $p->GetInfoTagString() ?></dd>
-		<dd><?php echo $p->GetInfoParsed() ?></dd>
-	</dl>
-<?php } } else { ?>
-	<div class="empty">This class has no properties.</div>
-<?php } ?>
-</div>
+	<div class="info">
+	<?php echo $class->GetInfoParsed() ?>
+	</div>
 
-<h2>Methods</h2>
-<div class="methods">
-<?php if(count($class->Methods)) { foreach($class->Methods as $m) { ?>
-	<dl>
-		<dt><?php echo $m->Name ?></dt>
-		<dd><?php echo $m->GetTag('return'), ' ', $m->GetInfoTagString() ?></dd>
-		<dd><?php echo $m->GetInfoParsed() ?></dd>
-	</dl>
-<?php } } else { ?>
-	<div class="empty">This class has no methods.</div>
-<?php } ?>
+	<hr />
+
+	<h2>Instance Properties</h2>
+	<div class="members">
+<?php
+$surface
+->Set('properties',$iprop)
+->Area('class-properties')
+?>
+	</div>
+
+	<h2>Instance Methods</h2>
+	<div class="members">
+<?php
+$surface
+->Set('methods',$imeth)
+->Area('class-methods')
+?>
+	</div>
+
+	<hr />
+
+	<h2>Static Properties</h2>
+	<div class="members">
+<?php
+$surface
+->Set('properties',$sprop)
+->Area('class-properties')
+?>
+	</div>
+
+	<h2>Static Methods</h2>
+	<div class="members">
+<?php
+$surface
+->Set('methods',$smeth)
+->Area('class-methods')
+?>
+	</div>
 </div>
+<div class="headline">}</div>

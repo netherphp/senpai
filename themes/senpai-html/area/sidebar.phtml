@@ -1,0 +1,20 @@
+<?php
+
+$Link = function($name) use($surface) {
+	return sprintf(
+		'%s%s.html',
+		$surface->Get('path-backpedal'),
+		strtolower(str_replace('\\','/',$name))
+	);
+}
+
+?>
+
+<div class="contentbox">
+	<dl>
+		<dt>Classes</dt>
+<?php foreach(Nether\Stash::Get('code-index') as $class) { ?>
+		<dd><a href="<?php echo $Link($class->Name) ?>"><?php echo $class->Name ?></a></dd>
+<?php } ?>
+	</dl>
+</div>
