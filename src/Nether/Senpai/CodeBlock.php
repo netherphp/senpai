@@ -80,19 +80,19 @@ class CodeBlock {
 		else return null;
 	}
 
-	public function GetInfoTags() {
+	public function GetInfoTags($more=[]) {
 
 		$output = [];
 
-		foreach($this->Infotags as $name)
+		foreach(array_merge($this->Infotags,$more) as $name)
 		if($this->HasTag($name))
 		$output[$name] = $this->GetTag($name);
 
 		return $output;
 	}
 
-	public function GetInfoTagString($join=' ') {
-		return implode($join,array_keys($this->GetInfoTags()));
+	public function GetInfoTagString($join=' ',$more=[]) {
+		return implode($join,array_keys($this->GetInfoTags($more)));
 	}
 
 	public function GetInfoParsed() {

@@ -49,8 +49,19 @@ class SenpaiClass extends CodeBlock {
 		}
 
 		sort($this->Traits);
-		ksort($this->Properties);
-		ksort($this->Methods);
+
+		$sorter = function($a,$b){
+			if($a->GetTag('access') > $b->GetTag('access')) return -1;
+			elseif($a->GetTag('access') < $b->GetTag('access')) return 1;
+			else {
+				if($a->Name > $b->Name) return 1;
+				elseif($a->Name < $b->Name) return -1;
+				else return 0;
+			}
+		};
+
+		uasort($this->Properties,$sorter);
+		uasort($this->Methods,$sorter);
 		return;
 	}
 

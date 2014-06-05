@@ -13,7 +13,7 @@ $Datatypes = function($str) {
 ?>
 
 <?php if(count($methods)) { foreach($methods as $m) { ?>
-	<dl id="method-<?php echo strtolower($m->Name) ?>" class="method <?php echo $m->GetInfoTagString() ?>">
+	<dl id="method-<?php echo strtolower($m->Name) ?>" class="method <?php echo $m->GetInfoTagString(' ',['static','public','protected','private']) ?>">
 	<?php foreach($m->GetTag('argv') as $argkey => $argv) { ?>
 	<dt>
 		<span class="tag return"><?php echo $m->GetTag('return') ?></span>

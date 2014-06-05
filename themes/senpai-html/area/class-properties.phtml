@@ -5,7 +5,7 @@ $properties = $surface->Get('properties');
 ?>
 
 <?php if(count($properties)) { foreach($properties as $p) { ?>
-	<dl id="property-<?php echo strtolower($p->Name) ?>" class="property <?php echo $p->GetInfoTagString() ?>">
+	<dl id="property-<?php echo strtolower($p->Name) ?>" class="property <?php echo $p->GetInfoTagString(' ',['static','public','protected','private']) ?>">
 	<dt>
 		<span class="tag type"><?php echo $p->GetTag('type') ?></span>
 		<span class="tag access"><?php echo $p->GetTag('access') ?></span>
