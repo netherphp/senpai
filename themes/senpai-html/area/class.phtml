@@ -13,9 +13,10 @@ $surface->Set('page-title',"Class {$class->Name}");
 
 <h1>class <?php echo $class->Name ?> {</h1>
 <div class="senpai class">
-<?php if(count($class->Extends) || count($class->Traits)) { ?>
+<?php if(count($class->Extends) || count($class->Traits) || count($class->Interfaces)) { ?>
 	<ul class="extends">
 <?php foreach($class->Extends as $extend) { ?><li>extends <span class="name"><?php echo $extend ?></span></li><?php } ?>
+<?php foreach($class->Interfaces as $iface) { ?><li>implements <span class="name"><?php echo $iface ?></span></li><?php } ?>
 <?php foreach($class->Traits as $trait) { ?><li>uses <span class="name"><?php echo $trait ?></span></li><?php } ?>
 	</ul>
 <?php } ?>

@@ -10,6 +10,7 @@ class SenpaiClass extends CodeBlock {
 	public $Properties = [];
 	public $Methods = [];
 	public $Traits = [];
+	public $Interfaces = [];
 
 	////////////////
 	////////////////
@@ -20,8 +21,14 @@ class SenpaiClass extends CodeBlock {
 		if($r->isFinal()) $this->AddTag('final');
 		if($r->isAbstract()) $this->AddTag('abstract');
 		if($r->isTrait()) $this->AddTag('trait');
+		if($r->isInterface()) $this->AddTag('interface');
 
 		$this->Extends = $r->getParentClassNameList();
+
+		foreach($r->getInterfaces() as $iface) {
+			$i = new SenpaiClass($iface);
+			if(!$i->HasTag('skipdoc')) $this->Interfaces[$i->Name] = $i;
+		}
 
 		foreach($r->getTraits() as $trait) {
 			$t = new SenpaiClass($trait);
