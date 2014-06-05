@@ -32,6 +32,10 @@ class SenpaiProperty extends ClassMember {
 	the line number the property ends on for extraction later.
 	//*/
 
+		// if it hits a php built in thing, we cannot open those.
+		if(!$this->File)
+		return '';
+
 		$fp = fopen($this->File,'r');
 
 		// scroll to where the property ends.

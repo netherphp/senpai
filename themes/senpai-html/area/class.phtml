@@ -17,7 +17,7 @@ $surface->Set('page-title',"Class {$class->Name}");
 	<ul class="extends">
 <?php foreach($class->Extends as $extend) { ?><li>extends <span class="name"><?php echo $extend ?></span></li><?php } ?>
 <?php foreach($class->Interfaces as $iface) { ?><li>implements <span class="name"><?php echo $iface ?></span></li><?php } ?>
-<?php foreach($class->Traits as $trait) { ?><li>uses <span class="name"><?php echo $trait ?></span></li><?php } ?>
+<?php foreach($class->Traits as $trait) { ?><li>uses <span class="name"><?php echo $trait->Name ?></span></li><?php } ?>
 	</ul>
 <?php } ?>
 

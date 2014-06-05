@@ -124,6 +124,10 @@ class CodeBlock {
 	fetch a slice of a file.
 	//*/
 
+		// if it hits a php built in thing, we cannot open those.
+		if(!$this->File)
+		return '';
+
 		$output = '';
 		$num = 1;
 		$fp = fopen($this->File,'r');
