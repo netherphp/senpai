@@ -12,7 +12,7 @@
 	"require":{
 		"php":">=5.4.0",
 		"michelf/php-markdown":"1.*",
-		"netherphp/surface":"dev-master",
+		"netherphp/surface":"~1.0.0",
 		"andrewsville/php-token-reflection":"1.3.*"
 	},
 	"require-dev":{ },
