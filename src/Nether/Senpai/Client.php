@@ -17,7 +17,29 @@ the command line interface to get noticed by senpai.
 	you do not have to write one from scratch.
 	//*/
 
-		echo 'So you want to create a new project...', PHP_EOL;
+		$Filename = sprintf(
+			'%s%s%s',
+			getcwd(),
+			DIRECTORY_SEPARATOR,
+			($this->GetOption('filename') ?? 'senpai.json')
+		);
+		$File = basename($Filename);
+		$Path = dirname($Filename);
+
+		////////
+
+		if(file_exists($Filename))
+		if(!$this::PromptEquals('File exists. Overwrite?','[y/n]', 'y')) {
+			$this::Message('OK, Goodbye.');
+			return 0;
+		}
+
+		////////
+
+		$this::Message("Creating config file ({$File})...");
+
+		$Config = new Nether\Senpai\Config;
+		$Config->Write($Filename);
 
 		return 0;
 	}
