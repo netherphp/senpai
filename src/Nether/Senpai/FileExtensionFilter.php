@@ -25,11 +25,11 @@ extends FilterIterator {
 	accept files which have a valid extension.
 	//*/
 
-		if($this->IsDir())
-		return FALSE;
-
+		if($this->IsFile())
 		if($this->Extensions->HasValue($this->GetExtension()) !== FALSE)
 		return TRUE;
+
+		return FALSE;
 	}
 
 	static public function
