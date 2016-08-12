@@ -21,4 +21,23 @@ abstract class Struct {
 		return $this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	protected
+	$Namespace = '\\';
+
+	public function
+	GetNamespace():
+	String {
+		return $this->Namespace;
+	}
+
+	public function
+	SetNamespace(String $Namespace):
+	self {
+		$this->Namespace = $Namespace;
+		return $this;
+	}
+
 }

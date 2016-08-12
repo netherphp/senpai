@@ -2,9 +2,13 @@
 
 namespace Nether\Senpai;
 use \Nether;
+use \PhpParser;
 
 use \SplFileInfo;
 use \PhpParser\ParserFactory;
+use \Nether\Senpai\Struct\NamespaceObject;
+use \Nether\Senpai\Struct\ClassObject;
+use \Nether\Senpai\Struct\FunctionObject;
 
 class Builder {
 
@@ -51,9 +55,6 @@ class Builder {
 	Run():
 	self {
 
-		$this->Root = new Struct\NamespaceObject;
-		$this->Parser = (new ParserFactory)->Create(ParserFactory::PREFER_PHP7);
-
 		foreach($this->Config->GetPaths() as $Iter => $Path) {
 			if(is_dir($Path))
 			$this->ScanDirectory($Path);
@@ -61,6 +62,10 @@ class Builder {
 			elseif(is_file($Path))
 			$this->ScanFile($Path);
 		}
+
+		$this->Root = new Struct\NamespaceObject;
+		$this->Root->SetName('\\');
+		$this->Parser = (new ParserFactory)->Create(ParserFactory::PREFER_PHP7);
 
 		foreach($this->Files as $Filename)
 		$this->ParseFile($Filename);
@@ -102,6 +107,21 @@ class Builder {
 		echo "parsing {$Filename}...", PHP_EOL;
 
 		$Nodes = $this->Parser->Parse(file_get_contents($Filename));
+
+		foreach($Nodes as $Node) {
+			if($Node instanceof PhpParser\Node\Stmt\Namespace_)
+			$this->ParseNamespace($Node);
+		}
+
+		return $this;
+	}
+
+	protected function
+	ParseNamespace(PhpParser\Node\Stmt\Namespace_ $Namespace):
+	self {
+
+		$Struct = NamespaceObject::FromPhpParser($Namespace);
+
 
 		return $this;
 	}

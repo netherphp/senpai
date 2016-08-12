@@ -2,6 +2,7 @@
 
 namespace Nether\Senpai\Struct;
 use \Nether;
+use \PhpParser;
 
 use \Nether\Object\Datastore;
 
@@ -46,6 +47,19 @@ extends Nether\Senpai\Struct {
 		$this->Functions = new Datastore;
 
 		return;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	static public function
+	FromPhpParser(PhpParser\Node\Stmt\Namespace_ $Node):
+	self {
+
+		$Struct = (new static);
+
+
+		return $Struct;
 	}
 
 }
