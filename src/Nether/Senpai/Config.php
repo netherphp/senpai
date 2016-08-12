@@ -9,11 +9,26 @@ use \Exception;
 class Config
 implements JsonSerializable {
 
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
 	protected
 	$Paths = [ ];
 
+	public function
+	GetPaths():
+	Nether\Object\Datastore {
+		return $this->Paths;
+	}
+
 	protected
 	$Extensions = [ 'php' ];
+
+	public function
+	GetExtensions():
+	Nether\Object\Datastore {
+		return $this->Extensions;
+	}
 
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
@@ -38,6 +53,27 @@ implements JsonSerializable {
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 
+	public function
+	__construct($Input=NULL) {
+
+		$this->Paths = (new Nether\Object\Datastore)->SetData($this->Paths);
+		$this->Extensions = (new Nether\Object\Datastore)->SetData($this->Extensions);
+
+		if(!$Input || !is_object($Input))
+		return;
+
+		if(property_exists($Input,'Paths') && is_array($Input->Paths))
+		$this->Paths->SetData($Input->Paths);
+
+		if(property_exists($Input,'Extensions') && is_array($Input->Extensions))
+		$this->Extensions->SetData($Input->Extensions);
+
+		return;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
 	// JsonSerializable Interface
 
 	public function
@@ -45,8 +81,8 @@ implements JsonSerializable {
 	Array {
 
 		return [
-			'Paths'      => $this->Paths,
-			'Extensions' => $this->Extensions
+			'Paths'      => $this->Paths->Reindex()->GetData(),
+			'Extensions' => $this->Extensions->Reindex()->GetData()
 		];
 	}
 
@@ -86,6 +122,25 @@ implements JsonSerializable {
 		throw new Exception('last second wtf attempting to write file');
 
 		return $this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	static public function
+	GetFromFile(String $Filename):
+	self {
+
+		if(!is_readable($Filename))
+		throw new Exception('unable to read file');
+
+		$Data = json_decode(file_get_contents($Filename));
+
+		if(!is_object($Data))
+		throw new Exception('error parsing file apparently');
+
+		return (new static($Data))
+		->SetFilename($Filename);
 	}
 
 }

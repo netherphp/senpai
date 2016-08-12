@@ -17,12 +17,7 @@ the command line interface to get noticed by senpai.
 	you do not have to write one from scratch.
 	//*/
 
-		$Filename = sprintf(
-			'%s%s%s',
-			getcwd(),
-			DIRECTORY_SEPARATOR,
-			($this->GetOption('filename') ?? 'senpai.json')
-		);
+		$Filename = $this->GetFilename();
 		$File = basename($Filename);
 		$Path = dirname($Filename);
 
@@ -52,9 +47,38 @@ the command line interface to get noticed by senpai.
 	the documentation and writing it out.
 	//*/
 
-		echo 'So you want to build documentation...', PHP_EOL;
+		$Filename = $this->GetFilename();
+		$File = basename($Filename);
+		$Path = dirname($Filename);
 
+		try {
+			$Builder = Nether\Senpai\Builder::GetFromFile($Filename);
+		}
+
+		catch(Exception $Error) {
+			$this::Message('Something Happened:');
+			$this::Message($Error->GetMessage());
+			return 1;
+		}
+
+		$Builder->Run();
 		return 0;
+	}
+
+	protected function
+	GetFilename():
+	String {
+	/*//
+	get the config filename from either an option or the default file we will
+	use for saving options.
+	//*/
+
+		return sprintf(
+			'%s%s%s',
+			getcwd(),
+			DIRECTORY_SEPARATOR,
+			($this->GetOption('filename') ?? 'senpai.json')
+		);
 	}
 
 }
