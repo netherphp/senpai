@@ -1,7 +1,8 @@
-# Nether Senpai
+# Nether\Senpai
 
 Using the magic of PHP-Parser and all the new features of 7.1, never manually
-document a technical aspect of your code ever again.
+document a technical aspect of your code ever again. It should be able to
+process your code no matter what visual style or standard you use.
 
 However, you still can if you want. Using a comment format called Nether
 Notation which I promise you will hate just because its different, you can
@@ -14,3 +15,7 @@ been trying to pull this shit off for years now and PHP finally is ready for it.
 
 - PHP 7.1
 - Composer
+
+# See Also
+
+- [Nether Code Standard](https://github.com/netherphp/standards)
