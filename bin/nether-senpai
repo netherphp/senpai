@@ -1,3 +1,9 @@
 <?php
 
+require(sprintf(
+	'%s/autoload.php',
+	dirname(__FILE__,4)
+));
 
+(new Nether\Senpai\Client)
+->Run();
