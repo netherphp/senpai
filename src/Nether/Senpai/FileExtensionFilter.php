@@ -13,11 +13,7 @@ extends FilterIterator {
 
 	public function
 	__construct(RecursiveDirectoryIterator $Iterator, Datastore $Extensions) {
-	/*//
-	//*/
-
 		parent::__construct(new RecursiveIteratorIterator($Iterator));
-
 		$this->Extensions = $Extensions;
 		return;
 	}
@@ -29,7 +25,7 @@ extends FilterIterator {
 	accept files which have a valid extension.
 	//*/
 
-		if($this->IsDot() || $this->IsDir())
+		if($this->IsDir())
 		return FALSE;
 
 		if($this->Extensions->HasValue($this->GetExtension()) !== FALSE)
