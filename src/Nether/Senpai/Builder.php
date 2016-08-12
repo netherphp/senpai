@@ -4,6 +4,7 @@ namespace Nether\Senpai;
 use \Nether;
 
 use \SplFileInfo;
+use \PhpParser\ParserFactory;
 
 class Builder {
 
@@ -32,6 +33,15 @@ class Builder {
 	////////////////////////////////////////////////////////////////
 
 	protected
+	$Root = NULL;
+
+	private
+	$Parser = NULL;
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	protected
 	$Files = [];
 
 	////////////////////////////////////////////////////////////////
@@ -41,16 +51,19 @@ class Builder {
 	Run():
 	self {
 
+		$this->Root = new Struct\NamespaceObject;
+		$this->Parser = (new ParserFactory)->Create(ParserFactory::PREFER_PHP7);
+
 		foreach($this->Config->GetPaths() as $Iter => $Path) {
 			if(is_dir($Path))
 			$this->ScanDirectory($Path);
 
-			else
+			elseif(is_file($Path))
 			$this->ScanFile($Path);
 		}
 
-		echo 'Here are the files we decided to read:', PHP_EOL;
-		print_r($this->Files);
+		foreach($this->Files as $Filename)
+		$this->ParseFile($Filename);
 
 		return $this;
 	}
@@ -84,9 +97,13 @@ class Builder {
 
 	public function
 	ParseFile(String $Filename):
-	?Nether\Senpai\Struct {
+	self {
 
-		return NULL;
+		echo "parsing {$Filename}...", PHP_EOL;
+
+		$Nodes = $this->Parser->Parse(file_get_contents($Filename));
+
+		return $this;
 	}
 
 	////////////////////////////////////////////////////////////////
