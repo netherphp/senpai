@@ -56,9 +56,10 @@ extends Nether\Senpai\Struct {
 	FromPhpParser(PhpParser\Node\Stmt\Namespace_ $Node):
 	self {
 
+		$Name = $Node->name->parts;
+
 		$Struct = (new static)
-		->SetName($Node->name->getFirst())
-		->SetNamespace($Node->name->getLast());
+		->SetName(implode('\\',$Name));
 
 		return $Struct;
 	}

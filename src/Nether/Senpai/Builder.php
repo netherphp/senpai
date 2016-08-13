@@ -9,6 +9,7 @@ use \PhpParser\ParserFactory;
 use \Nether\Senpai\Struct\NamespaceObject;
 use \Nether\Senpai\Struct\ClassObject;
 use \Nether\Senpai\Struct\FunctionObject;
+use \Nether\Object\Datastore;
 
 class Builder {
 
@@ -70,6 +71,8 @@ class Builder {
 		foreach($this->Files as $Filename)
 		$this->ParseFile($Filename);
 
+		print_r($this->Root);
+
 		return $this;
 	}
 
@@ -94,7 +97,7 @@ class Builder {
 
 		$File = new SplFileInfo($Path);
 
-		if($this->Config->Extensions->HasValue($File->GetExtension()))
+		if($this->Config->GetExtensions()->HasValue($File->GetExtension()) !== FALSE)
 		$this->Files[] = $Path;
 
 		return $this;
@@ -121,9 +124,47 @@ class Builder {
 	self {
 
 		$Struct = NamespaceObject::FromPhpParser($Namespace);
+		echo "Found Namespace: {$Struct->GetName()}", PHP_EOL;
 
+		// setup any missing namespaces and insert this one into the top
+		// most of its stack.
+
+		$Current = $this->BuildNamespaces($Struct->GetNamespaceChunked());
+		$Spaces = $Current->GetNamespaces();
+
+		if($Spaces->HasKey($Struct->GetNameShort())) {
+			$Current->GetClasses()->MergeRight($Struct->GetClasses()->GetData());
+			$Current->GetFunctions()->MergeRight($Struct->GetFunctions()->GetData());
+		} else {
+			$Spaces->Shove($Struct->GetNameShort(),$Struct);
+		}
 
 		return $this;
+	}
+
+	protected function
+	BuildNamespaces(Array $Tree):
+	NamespaceObject {
+
+		$SpaceName = '\\';
+		$Level = $this->Root;
+		foreach($Tree as $StepName) {
+			$SpaceName = trim("{$SpaceName}\\{$StepName}",'\\');
+
+			if(!$Level->GetNamespaces()->HasKey($StepName)) {
+				$New = new Nether\Senpai\Struct\NamespaceObject;
+				$New->SetName($SpaceName);
+
+				$Level->GetNamespaces()->Shove($StepName,$New);
+				$Level = $New;
+			}
+
+			else {
+				$Level = $Level->GetNamespaces()->Get($StepName);
+			}
+		}
+
+		return $Level;
 	}
 
 	////////////////////////////////////////////////////////////////
