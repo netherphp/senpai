@@ -41,7 +41,10 @@ abstract class Struct {
 	components.
 	//*/
 
-		return array_pop(explode('\\',$this->Name));
+		$Name = array_pop(explode('\\',$this->Name));
+		if(!$Name) $Name = '\\';
+
+		return $Name;
 	}
 
 	public function
@@ -81,6 +84,44 @@ abstract class Struct {
 		array_pop($List);
 
 		return $List;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	protected
+	$Parent = NULL;
+
+	public function
+	GetParent():
+	?Nether\Senpai\Struct {
+		return $this->Parent;
+	}
+
+	public function
+	SetParent(?Nether\Senpai\Struct $Parent):
+	self {
+		$this->Parent = $Parent;
+		return $this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	protected
+	$Filename = NULL;
+
+	public function
+	GetFilename():
+	?String {
+		return $this->Filename;
+	}
+
+	public function
+	SetFilename(String $Filename):
+	self {
+		$this->Filename = $Filename;
+		return $this;
 	}
 
 }

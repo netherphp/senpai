@@ -2,8 +2,9 @@
 
 namespace Nether\Senpai\Struct;
 use \Nether;
-use \PhpParser;
 
+use \PhpParser\Node\Stmt\Namespace_ as PhpParserNamespace;
+use \PhpParser\Node\Stmt\Class_ as PhpParserClass;
 use \Nether\Object\Datastore;
 
 class NamespaceObject
@@ -53,13 +54,30 @@ extends Nether\Senpai\Struct {
 	////////////////////////////////////////////////////////////////
 
 	static public function
-	FromPhpParser(PhpParser\Node\Stmt\Namespace_ $Node):
+	FromPhpParser(PhpParserNamespace $Node, ?NamespaceObject $Namespace=NULL):
 	self {
 
-		$Name = $Node->name->parts;
+		$Struct = new static;
+		$Name = implode('\\',$Node->name->parts);
 
-		$Struct = (new static)
-		->SetName(implode('\\',$Name));
+		$Struct
+		->SetName($Name)
+		->SetParent($Namespace);
+
+		// find things within a namespace that we want to handle.
+
+		foreach($Node->stmts as $Child) {
+
+			// handle classes.
+			if($Child instanceof PhpParserClass) {
+				$Class = ClassObject::FromPhpParser($Child, $Struct);
+				$Struct->GetClasses()->Shove(
+					$Class->GetName(),
+					$Class
+				);
+			}
+
+		}
 
 		return $Struct;
 	}

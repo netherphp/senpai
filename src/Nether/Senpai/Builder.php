@@ -5,7 +5,9 @@ use \Nether;
 use \PhpParser;
 
 use \SplFileInfo;
-use \PhpParser\ParserFactory;
+use \PhpParser\ParserFactory as PhpParserFactory;
+use \PhpParser\Node\Stmt\Namespace_ as PhpParserNamespace;
+use \PhpParser\Node\Stmt\Class_ as PhpParserClass;
 use \Nether\Senpai\Struct\NamespaceObject;
 use \Nether\Senpai\Struct\ClassObject;
 use \Nether\Senpai\Struct\FunctionObject;
@@ -38,7 +40,18 @@ class Builder {
 	////////////////////////////////////////////////////////////////
 
 	protected
+	$FileInfo = [];
+	/*//
+	@type Array[Nether\Senpai\Struct\File]
+	this will hold the list of files with their parsed attributes like what
+	they contain, what they use, etc.
+	//*/
+
+	protected
 	$Root = NULL;
+	/*//
+	this is the root namespace object that will hold the code tree.
+	//*/
 
 	private
 	$Parser = NULL;
@@ -48,6 +61,10 @@ class Builder {
 
 	protected
 	$Files = [];
+	/*//
+	@type Array[String]
+	just a list of all the files we are going to parse.
+	//*/
 
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
@@ -66,12 +83,46 @@ class Builder {
 
 		$this->Root = new Struct\NamespaceObject;
 		$this->Root->SetName('\\');
-		$this->Parser = (new ParserFactory)->Create(ParserFactory::PREFER_PHP7);
+		$this->Parser = (new PhpParserFactory)->Create(PhpParserFactory::PREFER_PHP7);
 
 		foreach($this->Files as $Filename)
 		$this->ParseFile($Filename);
 
-		print_r($this->Root);
+		////////
+		////////
+
+		// just a silly printer for debugging.
+
+		$Printer = NULL;
+		$Printer = function(Nether\Senpai\Struct $Struct, Int $Level=0) use(&$Printer) {
+
+			if($Level) {
+				if($Level > 1)
+				echo str_repeat("  ",($Level - 1));
+
+				echo "└ ";
+			}
+
+			printf(
+				'%s %s%s',
+				array_pop(explode('\\',get_class($Struct))),
+				$Struct->GetName(),
+				PHP_EOL
+			);
+
+			if($Struct instanceof NamespaceObject) {
+				foreach($Struct->GetClasses() as $Cla)
+				$Printer($Cla,($Level + 1));
+
+				foreach($Struct->GetNamespaces() as $Nam)
+				$Printer($Nam,($Level + 1));
+			}
+
+		};
+		$Printer($this->Root);
+
+		////////
+		////////
 
 		return $this;
 	}
@@ -106,37 +157,53 @@ class Builder {
 	public function
 	ParseFile(String $Filename):
 	self {
-
-		echo "parsing {$Filename}...", PHP_EOL;
+	/*//
+	handle reading a file and doing things with things we find in it.
+	//*/
 
 		$Nodes = $this->Parser->Parse(file_get_contents($Filename));
 
 		foreach($Nodes as $Node) {
-			if($Node instanceof PhpParser\Node\Stmt\Namespace_)
-			$this->ParseNamespace($Node);
+			if($Node instanceof PhpParserNamespace)
+			$this->ParseNamespace($Node, $Filename);
 		}
 
 		return $this;
 	}
 
 	protected function
-	ParseNamespace(PhpParser\Node\Stmt\Namespace_ $Namespace):
+	ParseNamespace(PhpParserNamespace $Namespace, String $Filename):
 	self {
+	/*//
+	handle finding a namespace in the file.
+	//*/
 
+		// create a new namespace.
 		$Struct = NamespaceObject::FromPhpParser($Namespace);
-		echo "Found Namespace: {$Struct->GetName()}", PHP_EOL;
+		$Struct->SetFilename($Filename);
 
-		// setup any missing namespaces and insert this one into the top
-		// most of its stack.
-
+		// build a branch for it to sit in if needed.
 		$Current = $this->BuildNamespaces($Struct->GetNamespaceChunked());
-		$Spaces = $Current->GetNamespaces();
+		$Existing = $Current->GetNamespaces()->Get($Struct->GetNameShort());
 
-		if($Spaces->HasKey($Struct->GetNameShort())) {
-			$Current->GetClasses()->MergeRight($Struct->GetClasses()->GetData());
-			$Current->GetFunctions()->MergeRight($Struct->GetFunctions()->GetData());
+		if($Existing) {
+			// if this namespace had already existed because of another file
+			// merge this namespace contents with the original.
+
+			$Existing->GetClasses()
+			->MergeRight($Struct->GetClasses()->GetData());
+
+			$Existing->GetFunctions()
+			->MergeRight($Struct->GetFunctions()->GetData());
 		} else {
-			$Spaces->Shove($Struct->GetNameShort(),$Struct);
+			// if it is a new namespace throw it in on the current level.
+
+			$Struct->SetParent($Current);
+
+			$Current->GetNamespaces()->Shove(
+				$Struct->GetNameShort(),
+				$Struct
+			);
 		}
 
 		return $this;
@@ -145,6 +212,10 @@ class Builder {
 	protected function
 	BuildNamespaces(Array $Tree):
 	NamespaceObject {
+	/*//
+	starting from the root up, build a branch of namespaces (if needed) and
+	return the furthest/deepest most one of them.
+	//*/
 
 		$SpaceName = '\\';
 		$Level = $this->Root;
@@ -152,8 +223,9 @@ class Builder {
 			$SpaceName = trim("{$SpaceName}\\{$StepName}",'\\');
 
 			if(!$Level->GetNamespaces()->HasKey($StepName)) {
-				$New = new Nether\Senpai\Struct\NamespaceObject;
+				$New = new NamespaceObject;
 				$New->SetName($SpaceName);
+				$New->SetParent($Level);
 
 				$Level->GetNamespaces()->Shove($StepName,$New);
 				$Level = $New;
