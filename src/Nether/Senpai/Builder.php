@@ -118,6 +118,16 @@ class Builder {
 				$Printer($Nam,($Level + 1));
 			}
 
+			if($Struct instanceof ClassObject) {
+				foreach($Struct->GetProperties() as $Mth)
+				$Printer($Mth,($Level + 1));
+			}
+
+			if($Struct instanceof ClassObject) {
+				foreach($Struct->GetMethods() as $Mth)
+				$Printer($Mth,($Level + 1));
+			}
+
 		};
 		$Printer($this->Root);
 

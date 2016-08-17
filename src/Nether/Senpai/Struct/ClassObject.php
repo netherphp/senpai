@@ -5,6 +5,8 @@ use \Nether;
 use \PhpParser;
 
 use \PhpParser\Node\Stmt\Class_ as PhpParserClass;
+use \PhpParser\Node\Stmt\ClassMethod as PhpParserMethod;
+use \PhpParser\Node\Stmt\Property as PhpParserProperty;
 use \Nether\Object\Datastore;
 use \Nether\Senpai\Struct\NamespaceObject;
 
@@ -67,6 +69,16 @@ extends Nether\Senpai\Struct {
 		$Struct
 		->SetName($Name)
 		->SetParent($Namespace);
+
+		foreach($Node->stmts as $Child) {
+			if($Child instanceof PhpParserMethod) {
+				$Method = MethodObject::FromPhpParser($Child, $Struct);
+				$Struct->GetMethods()->Shove(
+					$Method->GetName(),
+					$Method
+				);
+			}
+		}
 
 		return $Struct;
 	}
