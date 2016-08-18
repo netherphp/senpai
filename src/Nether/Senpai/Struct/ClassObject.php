@@ -78,6 +78,14 @@ extends Nether\Senpai\Struct {
 					$Method
 				);
 			}
+
+			elseif($Child instanceof PhpParserProperty) {
+				$Property = PropertyObject::FromPhpParser($Child->props[0], $Struct);
+				$Struct->GetProperties()->Shove(
+					$Property->GetName(),
+					$Property
+				);
+			}
 		}
 
 		return $Struct;

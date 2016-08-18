@@ -4,8 +4,8 @@ namespace Nether\Senpai\Struct;
 use \Nether;
 use \PhpParser;
 
-class MethodObject
-extends FunctionObject {
+class PropertyObject
+extends VariableObject {
 
 	// ...
 

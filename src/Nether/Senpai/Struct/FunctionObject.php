@@ -12,13 +12,16 @@ class FunctionObject
 extends Nether\Senpai\Struct {
 
 	public static function
-	FromPhpParser($Node):
+	FromPhpParser($Node, ?Nether\Senpai\Struct $Parent=NULL):
 	self {
 
 		$Struct = new static;
 		$Name = $Node->name;
 
 		$Struct->SetName($Name);
+
+		if($Parent)
+		$Struct->SetParent($Parent);
 
 		return $Struct;
 	}
