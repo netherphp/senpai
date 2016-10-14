@@ -53,9 +53,31 @@ implements JsonSerializable {
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 
+	protected
+	$OutputFile = NULL;
+
+	public function
+	GetOutputFile():
+	?String {
+
+		return $this->OutputFile;
+	}
+
+	public function
+	SetOutputFile(String $Name):
+	self {
+
+		$this->OutputFile = $Name;
+		return $this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
 	public function
 	__construct($Input=NULL) {
 
+		$this->OutputFile = 'senpai.dat';
 		$this->Paths = (new Nether\Object\Datastore)->SetData($this->Paths);
 		$this->Extensions = (new Nether\Object\Datastore)->SetData($this->Extensions);
 
@@ -67,6 +89,9 @@ implements JsonSerializable {
 
 		if(property_exists($Input,'Extensions') && is_array($Input->Extensions))
 		$this->Extensions->SetData($Input->Extensions);
+
+		if(property_exists($Input,'OutputFile') && is_string($Input->OutputFile))
+		$this->OutputFile = $Input->OutputFile;
 
 		return;
 	}
@@ -81,6 +106,7 @@ implements JsonSerializable {
 	Array {
 
 		return [
+			'OutputFile' => $this->OutputFile,
 			'Paths'      => $this->Paths->Reindex()->GetData(),
 			'Extensions' => $this->Extensions->Reindex()->GetData()
 		];

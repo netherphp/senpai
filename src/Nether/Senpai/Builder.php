@@ -4,6 +4,7 @@ namespace Nether\Senpai;
 use \Nether;
 use \PhpParser;
 
+use \Exception                            as Exception;
 use \SplFileInfo                          as SplFileInfo;
 use \PhpParser\ParserFactory              as PhpParserFactory;
 use \PhpParser\Node\Stmt\Namespace_       as PhpParserNamespace;
@@ -89,56 +90,10 @@ class Builder {
 		foreach($this->Files as $Filename)
 		$this->ParseFile($Filename);
 
-		////////
-		////////
+		// technically the last step.
+		$this->WriteOutputFile();
 
-		// just a silly printer for debugging.
-
-		$Printer = NULL;
-		$Printer = function(Nether\Senpai\Struct $Struct, Int $Level=0) use(&$Printer) {
-
-			if($Level) {
-				if($Level > 1)
-				echo str_repeat("  ",($Level - 1));
-
-				echo "└ ";
-			}
-
-			printf(
-				'%s %s%s',
-				array_pop(explode('\\',get_class($Struct))),
-				$Struct->GetName(),
-				PHP_EOL
-			);
-
-			if($Struct instanceof NamespaceObject) {
-				foreach($Struct->GetFunctions() as $Fnc)
-				$Printer($Fnc,($Level + 1));
-
-				foreach($Struct->GetClasses() as $Cla)
-				$Printer($Cla,($Level + 1));
-
-				foreach($Struct->GetNamespaces() as $Nam)
-				$Printer($Nam,($Level + 1));
-			}
-
-			if($Struct instanceof ClassObject) {
-				foreach($Struct->GetConstants() as $Con)
-				$Printer($Con,($Level + 1));
-
-				foreach($Struct->GetProperties() as $Mth)
-				$Printer($Mth,($Level + 1));
-
-				foreach($Struct->GetMethods() as $Mth)
-				$Printer($Mth,($Level + 1));
-			}
-
-		};
-		$Printer($this->Root);
-
-		////////
-		////////
-
+		$this->PrintTree();
 		return $this;
 	}
 
@@ -300,6 +255,81 @@ class Builder {
 		}
 
 		return $Level;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	protected function
+	PrintTree():
+	self {
+
+		$Printer = NULL;
+
+		$Printer = function(Nether\Senpai\Struct $Struct, Int $Level=0) use(&$Printer) {
+
+			if($Level) {
+				if($Level > 1)
+				echo str_repeat("  ",($Level - 1));
+
+				echo "└ ";
+			}
+
+			printf(
+				'%s %s%s',
+				array_pop(explode('\\',get_class($Struct))),
+				$Struct->GetName(),
+				PHP_EOL
+			);
+
+			if($Struct instanceof NamespaceObject) {
+				foreach($Struct->GetFunctions() as $Fnc)
+				$Printer($Fnc,($Level + 1));
+
+				foreach($Struct->GetClasses() as $Cla)
+				$Printer($Cla,($Level + 1));
+
+				foreach($Struct->GetNamespaces() as $Nam)
+				$Printer($Nam,($Level + 1));
+			}
+
+			if($Struct instanceof ClassObject) {
+				foreach($Struct->GetConstants() as $Con)
+				$Printer($Con,($Level + 1));
+
+				foreach($Struct->GetProperties() as $Mth)
+				$Printer($Mth,($Level + 1));
+
+				foreach($Struct->GetMethods() as $Mth)
+				$Printer($Mth,($Level + 1));
+			}
+
+		};
+
+		$Printer($this->Root);
+
+		return $this;
+	}
+
+	protected function
+	WriteOutputFile():
+	self {
+
+		$OutputFile = $this->Config->GetOutputFile();
+
+		if(!$OutputFile)
+		throw new Exception('No OutputFile defined in configuration.');
+
+		if(file_exists($OutputFile) && !is_writable($OutputFile))
+		throw new Exception('Unable to overwrite existing OutputFile.');
+
+		if(!file_exists($OutputFile) && !is_writable(dirname($OutputFile)))
+		throw new Exception('Unable to write to OutputFile parent dir.');
+
+		echo "Writing {$OutputFile}", PHP_EOL;
+		file_put_contents($OutputFile,serialize($this->Root));
+
+		return $this;
 	}
 
 	////////////////////////////////////////////////////////////////
