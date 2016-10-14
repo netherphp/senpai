@@ -4,11 +4,12 @@ namespace Nether\Senpai\Struct;
 use \Nether;
 use \PhpParser;
 
-use \PhpParser\Node\Stmt\Class_ as PhpParserClass;
-use \PhpParser\Node\Stmt\ClassMethod as PhpParserMethod;
-use \PhpParser\Node\Stmt\Property as PhpParserProperty;
-use \Nether\Object\Datastore;
-use \Nether\Senpai\Struct\NamespaceObject;
+use \PhpParser\Node\Stmt\Class_           as PhpParserClass;
+use \PhpParser\Node\Stmt\ClassMethod      as PhpParserMethod;
+use \PhpParser\Node\Stmt\Property         as PhpParserProperty;
+use \PhpParser\Node\Stmt\ClassConst       as PhpParserClassConstant;
+use \Nether\Object\Datastore              as Datastore;
+use \Nether\Senpai\Struct\NamespaceObject as NamespaceObject;
 
 class ClassObject
 extends Nether\Senpai\Struct {
@@ -70,6 +71,8 @@ extends Nether\Senpai\Struct {
 		->SetName($Name)
 		->SetParent($Namespace);
 
+		//print_r($Node);
+
 		foreach($Node->stmts as $Child) {
 			if($Child instanceof PhpParserMethod) {
 				$Method = MethodObject::FromPhpParser($Child, $Struct);
@@ -84,6 +87,15 @@ extends Nether\Senpai\Struct {
 				$Struct->GetProperties()->Shove(
 					$Property->GetName(),
 					$Property
+				);
+			}
+
+			elseif($Child instanceof PhpParserClassConstant) {
+				$Const = ConstantObject::FromPhpParser($Child->consts[0], $Struct);
+
+				$Struct->GetConstants()->Shove(
+					$Const->GetName(),
+					$Const
 				);
 			}
 		}

@@ -111,14 +111,17 @@ class Builder {
 			);
 
 			if($Struct instanceof NamespaceObject) {
-				foreach($Struct->GetClasses() as $Cla)
-				$Printer($Cla,($Level + 1));
-
 				foreach($Struct->GetNamespaces() as $Nam)
 				$Printer($Nam,($Level + 1));
+
+				foreach($Struct->GetClasses() as $Cla)
+				$Printer($Cla,($Level + 1));
 			}
 
 			if($Struct instanceof ClassObject) {
+				foreach($Struct->GetConstants() as $Con)
+				$Printer($Con,($Level + 1));
+
 				foreach($Struct->GetProperties() as $Mth)
 				$Printer($Mth,($Level + 1));
 

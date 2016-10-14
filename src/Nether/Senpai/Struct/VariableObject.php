@@ -8,7 +8,7 @@ class VariableObject
 extends Nether\Senpai\Struct {
 
 	static public function
-	FromPhpParser(PhpParser\Node\Stmt $Node, ?Nether\Senpai\Struct $Parent=NULL):
+	FromPhpParser(PhpParser\NodeAbstract $Node, ?Nether\Senpai\Struct $Parent=NULL):
 	self {
 
 		$Struct = new static;
