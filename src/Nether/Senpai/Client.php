@@ -61,6 +61,8 @@ the command line interface to get noticed by senpai.
 			return 1;
 		}
 
+		$this::Message("Building Project {$Filename}");
+
 		$Builder->Run();
 		return 0;
 	}

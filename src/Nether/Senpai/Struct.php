@@ -25,7 +25,7 @@ abstract class Struct {
 	give this object a name. it should be the full name including namespace.
 	//*/
 
-		$this->Name = $Name;
+		$this->Name = trim($Name,'\\');
 		return $this;
 	}
 

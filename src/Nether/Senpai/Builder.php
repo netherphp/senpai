@@ -4,14 +4,14 @@ namespace Nether\Senpai;
 use \Nether;
 use \PhpParser;
 
-use \SplFileInfo;
-use \PhpParser\ParserFactory as PhpParserFactory;
-use \PhpParser\Node\Stmt\Namespace_ as PhpParserNamespace;
-use \PhpParser\Node\Stmt\Class_ as PhpParserClass;
-use \Nether\Senpai\Struct\NamespaceObject;
-use \Nether\Senpai\Struct\ClassObject;
-use \Nether\Senpai\Struct\FunctionObject;
-use \Nether\Object\Datastore;
+use \SplFileInfo                          as SplFileInfo;
+use \PhpParser\ParserFactory              as PhpParserFactory;
+use \PhpParser\Node\Stmt\Namespace_       as PhpParserNamespace;
+use \PhpParser\Node\Stmt\Class_           as PhpParserClass;
+use \Nether\Senpai\Struct\NamespaceObject as NamespaceObject;
+use \Nether\Senpai\Struct\ClassObject     as ClassObject;
+use \Nether\Senpai\Struct\FunctionObject  as FunctionObject;
+use \Nether\Object\Datastore              as Datastore;
 
 class Builder {
 
@@ -121,9 +121,7 @@ class Builder {
 			if($Struct instanceof ClassObject) {
 				foreach($Struct->GetProperties() as $Mth)
 				$Printer($Mth,($Level + 1));
-			}
 
-			if($Struct instanceof ClassObject) {
 				foreach($Struct->GetMethods() as $Mth)
 				$Printer($Mth,($Level + 1));
 			}
@@ -140,6 +138,8 @@ class Builder {
 	public function
 	ScanDirectory(String $Path):
 	self {
+
+		echo "Scanning Directory: {$Path}", PHP_EOL;
 
 		$Iterator = Nether\Senpai\FileExtensionFilter::GetFromDirectory(
 			$Path,
@@ -171,11 +171,16 @@ class Builder {
 	handle reading a file and doing things with things we find in it.
 	//*/
 
+		echo "Parsing File: {$Filename}", PHP_EOL;
+
 		$Nodes = $this->Parser->Parse(file_get_contents($Filename));
 
 		foreach($Nodes as $Node) {
 			if($Node instanceof PhpParserNamespace)
 			$this->ParseNamespace($Node, $Filename);
+
+			if($Node instanceof PhpParserClass)
+			$this->ParseClass($Node, $Filename);
 		}
 
 		return $this;
@@ -185,7 +190,7 @@ class Builder {
 	ParseNamespace(PhpParserNamespace $Namespace, String $Filename):
 	self {
 	/*//
-	handle finding a namespace in the file.
+	handle finding a namespace in this file.
 	//*/
 
 		// create a new namespace.
@@ -215,6 +220,25 @@ class Builder {
 				$Struct
 			);
 		}
+
+		return $this;
+	}
+
+	protected function
+	ParseClass(PhpParserClass $Node, String $Filename):
+	self {
+	/*//
+	handle finding a class not within a namespace in this file.
+	//*/
+
+		$Struct = ClassObject::FromPhpParser($Node,$this->Root);
+		$Struct->SetFilename($Filename);
+
+		$this->Root->GetClasses()
+		->Shove(
+			$Struct->GetName(),
+			$Struct
+		);
 
 		return $this;
 	}
