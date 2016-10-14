@@ -8,6 +8,7 @@ use \SplFileInfo                          as SplFileInfo;
 use \PhpParser\ParserFactory              as PhpParserFactory;
 use \PhpParser\Node\Stmt\Namespace_       as PhpParserNamespace;
 use \PhpParser\Node\Stmt\Class_           as PhpParserClass;
+use \PhpParser\Node\Stmt\Function_        as PhpParserFunction;
 use \Nether\Senpai\Struct\NamespaceObject as NamespaceObject;
 use \Nether\Senpai\Struct\ClassObject     as ClassObject;
 use \Nether\Senpai\Struct\FunctionObject  as FunctionObject;
@@ -111,11 +112,14 @@ class Builder {
 			);
 
 			if($Struct instanceof NamespaceObject) {
-				foreach($Struct->GetNamespaces() as $Nam)
-				$Printer($Nam,($Level + 1));
+				foreach($Struct->GetFunctions() as $Fnc)
+				$Printer($Fnc,($Level + 1));
 
 				foreach($Struct->GetClasses() as $Cla)
 				$Printer($Cla,($Level + 1));
+
+				foreach($Struct->GetNamespaces() as $Nam)
+				$Printer($Nam,($Level + 1));
 			}
 
 			if($Struct instanceof ClassObject) {
@@ -184,6 +188,9 @@ class Builder {
 
 			if($Node instanceof PhpParserClass)
 			$this->ParseClass($Node, $Filename);
+
+			if($Node instanceof PhpParserFunction)
+			$this->ParseFunction($Node, $Filename);
 		}
 
 		return $this;
@@ -238,6 +245,25 @@ class Builder {
 		$Struct->SetFilename($Filename);
 
 		$this->Root->GetClasses()
+		->Shove(
+			$Struct->GetName(),
+			$Struct
+		);
+
+		return $this;
+	}
+
+	protected function
+	ParseFunction(PhpParserFunction $Node, String $Filename):
+	self {
+	/*//
+	handle finding a function not within a namespace in this file.
+	//*/
+
+		$Struct = FunctionObject::FromPhpParser($Node,$this->Root);
+		$Struct->SetFilename($Filename);
+
+		$this->Root->GetFunctions()
 		->Shove(
 			$Struct->GetName(),
 			$Struct
