@@ -100,8 +100,8 @@ the command line interface to get noticed by senpai.
 		}
 
 		$this::Message("Building Project {$Filename}");
-
 		$Builder->Run();
+
 		return 0;
 	}
 
@@ -112,6 +112,19 @@ the command line interface to get noticed by senpai.
 		$Filename = $this->GetFilename();
 		$File = basename($Filename);
 		$Path = dirname($Filename);
+
+		try {
+			$Renderer = Nether\Senpai\Renderer::GetFromFile($Filename);
+		}
+
+		catch(Exception $Error) {
+			$this::Message('Something Happened:');
+			$this::Message($Error->GetMessage());
+			return 1;
+		}
+
+		$this::Message("Rendering Project {$Filename}");
+		$Renderer->Run();
 
 		return 0;
 	}

@@ -30,6 +30,35 @@ implements JsonSerializable {
 		return $this->Extensions;
 	}
 
+	protected
+	$Formats = [ 'html','json','md' ];
+
+	public function
+	GetFormats():
+	Nether\Object\Datastore {
+		return $this->Formats;
+	}
+
+	protected
+	$OutputFile = NULL;
+
+	public function
+	GetOutputFile():
+	?String {
+
+		return $this->OutputFile;
+	}
+
+	protected
+	$OutputDir = NULL;
+
+	public function
+	GetOutputDir():
+	?String {
+
+		return $this->OutputDir;
+	}
+
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 
@@ -53,15 +82,7 @@ implements JsonSerializable {
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 
-	protected
-	$OutputFile = NULL;
 
-	public function
-	GetOutputFile():
-	?String {
-
-		return $this->OutputFile;
-	}
 
 	public function
 	SetOutputFile(String $Name):
@@ -78,8 +99,10 @@ implements JsonSerializable {
 	__construct($Input=NULL) {
 
 		$this->OutputFile = 'senpai.dat';
+		$this->OutputDir = 'senpai';
 		$this->Paths = (new Nether\Object\Datastore)->SetData($this->Paths);
 		$this->Extensions = (new Nether\Object\Datastore)->SetData($this->Extensions);
+		$this->Formats = (new Nether\Object\Datastore)->SetData($this->Formats);
 
 		if(!$Input || !is_object($Input))
 		return;
@@ -90,8 +113,14 @@ implements JsonSerializable {
 		if(property_exists($Input,'Extensions') && is_array($Input->Extensions))
 		$this->Extensions->SetData($Input->Extensions);
 
+		if(property_exists($Input,'Formats') && is_array($Input->Formats))
+		$this->Formats->SetData($Input->Formats);
+
 		if(property_exists($Input,'OutputFile') && is_string($Input->OutputFile))
 		$this->OutputFile = $Input->OutputFile;
+
+		if(property_exists($Input,'OutputDir') && is_string($Input->OutputDir))
+		$this->OutputDir = $Input->OutputDir;
 
 		return;
 	}

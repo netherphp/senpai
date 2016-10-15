@@ -1,0 +1,12 @@
+<?php
+
+$that = $surface->Get('Namespace');
+
+?>
+
+<h1>Namespace: <?php echo $that->GetNameShort() ?></h1>
+<ul>
+	<li>Namespaces: <?php echo count($that->GetNamespaces()) ?></li>
+	<li>Functions: <?php echo count($that->GetClasses()) ?></li>
+	<li>Classes: <?php echo count($that->GetClasses()) ?></li>
+</ul>

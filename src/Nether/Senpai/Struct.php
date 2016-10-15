@@ -44,7 +44,7 @@ abstract class Struct {
 	//*/
 
 		$Name = array_pop(explode('\\',$this->Name));
-		if(!$Name) $Name = '\\';
+		if(!$Name) $Name = 'Root Namespace';
 
 		return $Name;
 	}

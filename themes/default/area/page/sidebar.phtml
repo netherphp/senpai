@@ -1,0 +1,28 @@
+<?php
+
+$Printer = NULL;
+
+$Printer = function($Struct, $Level=1) use(&$Printer) {
+
+	if($Struct instanceof Nether\Senpai\Struct\NamespaceObject) {
+		echo "<ul>";
+		echo "<li>{$Struct->GetNameShort()}</li>";
+
+		foreach($Struct->GetClasses() as $Child)
+		$Printer($Child,($Level+1));
+
+		foreach($Struct->GetNamespaces() as $Child)
+		$Printer($Child,($Level+1));
+
+		echo "</ul>";
+	}
+
+	if($Struct instanceof Nether\Senpai\Struct\ClassObject) {
+		echo "<ul>";
+		echo "<li>{$Struct->GetNameShort()}</li>";
+		echo "</ul>";
+	}
+
+};
+
+$Printer($surface->Get('Root'),1);
