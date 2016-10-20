@@ -50,6 +50,18 @@ extends Nether\Senpai\Struct {
 		return;
 	}
 
+	public function
+	GetFilenameHTML():
+	String {
+
+		$Prefix = array_pop($this->GetNameChunked());
+		
+		if($Prefix)
+		$Prefix .= '/';
+
+		return "{$Prefix}index.html";
+	}
+
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 

@@ -2,27 +2,27 @@
 
 $Printer = NULL;
 
-$Printer = function($Struct, $Level=1) use(&$Printer) {
+$Printer = function($Struct, $StructLevel, $Level=1) use(&$Printer) {
 
 	if($Struct instanceof Nether\Senpai\Struct\NamespaceObject) {
-		echo "<ul>";
-		echo "<li>{$Struct->GetNameShort()}</li>";
+		echo "<ul>\n";
+		echo "\t<li><a href=\"{$Struct->GetRelativePath($StructLevel,$Struct->GetFilenameHTML())}\">{$Struct->GetNameShort()}</a></li>\n";
 
 		foreach($Struct->GetClasses() as $Child)
-		$Printer($Child,($Level+1));
+		$Printer($Child,$StructLevel,($Level+1));
 
 		foreach($Struct->GetNamespaces() as $Child)
-		$Printer($Child,($Level+1));
+		$Printer($Child,$StructLevel,($Level+1));
 
-		echo "</ul>";
+		echo "</ul>\n";
 	}
 
 	if($Struct instanceof Nether\Senpai\Struct\ClassObject) {
-		echo "<ul>";
-		echo "<li>{$Struct->GetNameShort()}</li>";
-		echo "</ul>";
+		echo "<ul>\n";
+		echo "\t<li><a href=\"{$Struct->GetRelativePath($StructLevel,$Struct->GetFilenameHTML())}\">{$Struct->GetNameShort()}</a></li>\n";
+		echo "</ul>\n";
 	}
 
 };
 
-$Printer($surface->Get('Root'),1);
+$Printer($surface->Get('Root'),$surface->Get('Level'));

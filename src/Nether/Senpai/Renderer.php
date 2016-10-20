@@ -158,6 +158,7 @@ class Renderer {
 				]);
 
 				$Surface->Start();
+				$Surface->Set('Level',$Level);
 				$Surface->Set('Root',$this->Root);
 				$Surface->Set('Namespace',$Struct);
 				echo $Surface->GetArea('code/namespace');
