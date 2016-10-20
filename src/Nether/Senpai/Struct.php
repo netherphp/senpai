@@ -88,6 +88,32 @@ abstract class Struct {
 		return $List;
 	}
 
+	public function
+	GetRelativePath(Int $Current=1, ?String $Filename=NULL):
+	String {
+
+			if($Current >= 1)
+			$Output = str_repeat('../',($Current));
+			else
+			$Output = './';
+
+			$Output .= str_replace('\\','/',$this->GetNamespaceName());
+
+			if($Filename) {
+				$Output = trim($Output,'/');
+				$Output .= "/{$Filename}";
+			}
+			
+			return $Output;
+	}
+
+	public function
+	GetFilenameHTML():
+	String {
+
+		return "{$this->GetNameShort()}.html";
+	}
+
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 
