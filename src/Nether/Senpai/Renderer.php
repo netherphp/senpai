@@ -115,7 +115,7 @@ class Renderer {
 		$Printer = NULL;
 		$OutputDir = $this->GetConfig()->GetOutputDir();
 
-		$Printer = function(Nether\Senpai\Struct $Struct, Int $Level=0)
+		$Printer = function(Nether\Senpai\Struct $Struct, Int $Level=1)
 		use(&$Printer,$OutputDir) {
 
 			if($Struct instanceof NamespaceObject) {

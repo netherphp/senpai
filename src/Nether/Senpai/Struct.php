@@ -92,8 +92,8 @@ abstract class Struct {
 	GetRelativePath(Int $Current=1, ?String $Filename=NULL):
 	String {
 
-			if($Current >= 1)
-			$Output = str_repeat('../',($Current));
+			if($Current > 1)
+			$Output = str_repeat('../',($Current - 1));
 			else
 			$Output = './';
 
