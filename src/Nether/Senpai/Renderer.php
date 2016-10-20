@@ -5,6 +5,7 @@ use \Nether;
 
 use \Exception                            as Exception;
 use \Nether\Senpai\Struct\NamespaceObject as NamespaceObject;
+use \Nether\Senpai\Struct\ClassObject     as ClassObject;
 
 class Renderer {
 
@@ -158,6 +159,11 @@ class Renderer {
 				echo $Surface->GetArea('code/namespace');
 			}
 
+			elseif($Struct instanceof ClassObject) {
+				$Surface->Set('Class',$Struct);
+				echo $Surface->GetArea('code/class');
+			}
+
 			////////
 
 			file_put_contents($File,$Surface->Render(TRUE));
@@ -176,7 +182,6 @@ class Renderer {
 		};
 
 		$Printer($this->Root);
-
 		return $this;
 	}
 

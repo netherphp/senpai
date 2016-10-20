@@ -1,0 +1,11 @@
+<?php
+
+$that = $surface->Get('Class');
+
+?>
+
+<h1>Class: <?php echo $that->GetNameShort() ?></h1>
+<ul>
+	<li>Methods: <?php echo $that->GetMethods()->Count() ?></li>
+	<li>Properties: <?php echo $that->GetProperties()->Count() ?></li>
+</ul>

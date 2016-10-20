@@ -99,7 +99,7 @@ implements JsonSerializable {
 	__construct($Input=NULL) {
 
 		$this->OutputFile = 'senpai.dat';
-		$this->OutputDir = 'senpai';
+		$this->OutputDir = 'docs';
 		$this->Paths = (new Nether\Object\Datastore)->SetData($this->Paths);
 		$this->Extensions = (new Nether\Object\Datastore)->SetData($this->Extensions);
 		$this->Formats = (new Nether\Object\Datastore)->SetData($this->Formats);
