@@ -51,15 +51,20 @@ extends Nether\Senpai\Struct {
 	}
 
 	public function
-	GetFilenameHTML():
+	GetRenderFilename(String $Ext='html'):
+	String {
+		
+		if($Prefix = array_pop($this->GetNameChunked()))
+		$Prefix .= DIRECTORY_SEPARATOR;
+
+		return "{$Prefix}index.{$Ext}";
+	}
+
+	public function
+	GetRenderFilenameHTML():
 	String {
 
-		$Prefix = array_pop($this->GetNameChunked());
-		
-		if($Prefix)
-		$Prefix .= '/';
-
-		return "{$Prefix}index.html";
+		return str_replace(DIRECTORY_SEPARATOR,'/',$this->GetRenderFilename());
 	}
 
 	////////////////////////////////////////////////////////////////

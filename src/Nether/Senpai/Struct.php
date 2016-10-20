@@ -89,6 +89,20 @@ abstract class Struct {
 	}
 
 	public function
+	GetAbsolutePath(?String $Filename=NULL):
+	String {
+
+		$Output = join(DIRECTORY_SEPARATOR,$this->GetNamespaceChunked());
+
+		if($Filename) {
+			$Output .= DIRECTORY_SEPARATOR."{$Filename}";
+		}		
+
+		$Output = trim($Output,DIRECTORY_SEPARATOR);
+		return $Output;
+	}
+
+	public function
 	GetRelativePath(Int $Current=1, ?String $Filename=NULL):
 	String {
 
@@ -108,10 +122,10 @@ abstract class Struct {
 	}
 
 	public function
-	GetFilenameHTML():
+	GetRenderFilename(String $Ext='html'):
 	String {
 
-		return "{$this->GetNameShort()}.html";
+		return "{$Prefix}{$this->GetNameShort()}.{$Ext}";
 	}
 
 	////////////////////////////////////////////////////////////////

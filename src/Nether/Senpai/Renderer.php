@@ -118,62 +118,61 @@ class Renderer {
 		$Printer = function(Nether\Senpai\Struct $Struct, Int $Level=1)
 		use(&$Printer,$OutputDir) {
 
-			if($Struct instanceof NamespaceObject) {
-				$IndexFile = trim(sprintf(
-					'%s%s%sindex.html',
-					DIRECTORY_SEPARATOR,
-					$Struct->GetName(),
+			$File = sprintf(
+				'%s%s%s',
+				$OutputDir,
+				DIRECTORY_SEPARATOR,
+				$Struct->GetAbsolutePath($Struct->GetRenderFilename('html'))
+			);
+
+			$Dir = dirname($File);
+
+			////////
+
+			if(!is_dir($Dir))
+			@mkdir($Dir,0777,TRUE);
+
+			touch($File);
+
+			////////
+
+			$Surface = new Nether\Surface([
+				'AutoStash'   => FALSE,
+				'AutoRender'  => FALSE,
+				'AutoCapture' => FALSE,
+				'ThemeRoot'   => sprintf(
+					'%s%sthemes',
+					dirname(__FILE__,4),
 					DIRECTORY_SEPARATOR
-				),'\\');
+				)
+			]);
 
-				$IndexFile = sprintf(
-					'%s%s%s',
-					$OutputDir,
-					DIRECTORY_SEPARATOR,
-					$IndexFile
-				);
+			$Surface->Start();
+			$Surface->Set('Level',$Level);
+			$Surface->Set('Root',$this->Root);
 
-				$IndexDir = dirname($IndexFile);
+			////////
 
-				// make sure a directory exists for it.
-
-				if(!is_dir($IndexDir))
-				@mkdir($IndexDir,0777,TRUE);
-
-				// make sure a file exists for it.
-
-				touch($IndexFile);
-
-				////////
-
-				$Surface = new Nether\Surface([
-					'AutoStash'   => FALSE,
-					'AutoRender'  => FALSE,
-					'AutoCapture' => FALSE,
-					'ThemeRoot'   => sprintf(
-						'%s%sthemes',
-						dirname(__FILE__,4),
-						DIRECTORY_SEPARATOR
-					)
-				]);
-
-				$Surface->Start();
-				$Surface->Set('Level',$Level);
-				$Surface->Set('Root',$this->Root);
+			if($Struct instanceof NamespaceObject) {
 				$Surface->Set('Namespace',$Struct);
 				echo $Surface->GetArea('code/namespace');
-
-				file_put_contents(
-					$IndexFile,
-					$Surface->Render(TRUE)
-				);
-
-				unset($Surface);
-
-				foreach($Struct->GetNamespaces() as $Struck)
-				$Printer($Struck,($Level + 1));
 			}
 
+			////////
+
+			file_put_contents($File,$Surface->Render(TRUE));
+			unset($Surface);
+			echo "Wrote {$File}", PHP_EOL;
+
+			////////
+
+			if($Struct instanceof NamespaceObject) {
+				foreach($Struct->GetNamespaces() as $Struck)
+				$Printer($Struck,($Level + 1));
+
+				foreach($Struct->GetClasses() as $Struck)
+				$Printer($Struck,$Level);
+			}
 		};
 
 		$Printer($this->Root);
