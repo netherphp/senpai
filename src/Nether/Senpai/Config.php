@@ -10,7 +10,7 @@ class Config
 implements JsonSerializable {
 
 	////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////
+	// properties from the config file /////////////////////////////
 
 	protected
 	$Paths = [ ];
@@ -49,6 +49,14 @@ implements JsonSerializable {
 		return $this->OutputFile;
 	}
 
+	public function
+	SetOutputFile(String $Name):
+	self {
+
+		$this->OutputFile = $Name;
+		return $this;
+	}
+
 	protected
 	$OutputDir = NULL;
 
@@ -59,8 +67,34 @@ implements JsonSerializable {
 		return $this->OutputDir;
 	}
 
+	public function
+	SetOutputDir(String $Dir):
+	self {
+
+		$this->OutputDir = $Dir;
+		return $this;
+	}
+
+	protected
+	$ProjectName = NULL;
+
+	public function
+	GetProjectName():
+	?String {
+
+		return $this->ProjectName;
+	}
+
+	public function
+	SetProjectName(?String $Name):
+	self {
+
+		$this->ProjectName = $Name;
+		return $this;
+	}
+
 	////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////
+	// properties about the config file ////////////////////////////
 
 	protected
 	$Filename = NULL;
@@ -82,45 +116,41 @@ implements JsonSerializable {
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 
-
-
-	public function
-	SetOutputFile(String $Name):
-	self {
-
-		$this->OutputFile = $Name;
-		return $this;
-	}
-
-	////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////
-
 	public function
 	__construct($Input=NULL) {
 
+		// properties to create datastores on.
+		$StoreKeys = [
+			'Paths', 'Extensions',
+			'Formats'
+		];
+
+		// properties to merge input data from.
+		$CopyKeys = [
+			'Paths', 'Extensions',
+			'OutputDir', 'OutputFile', 'Formats'
+		];
+
+		////////
+
+		$this->ProjectName = 'Senpai Documentation';
 		$this->OutputFile = 'senpai.dat';
 		$this->OutputDir = 'docs';
-		$this->Paths = (new Nether\Object\Datastore)->SetData($this->Paths);
-		$this->Extensions = (new Nether\Object\Datastore)->SetData($this->Extensions);
-		$this->Formats = (new Nether\Object\Datastore)->SetData($this->Formats);
 
-		if(!$Input || !is_object($Input))
-		return;
+		foreach($StoreKeys as $Key)
+		$this->{$Key} = (new Nether\Object\Datastore)->SetData($this->{$Key});
 
-		if(property_exists($Input,'Paths') && is_array($Input->Paths))
-		$this->Paths->SetData($Input->Paths);
+		////////
 
-		if(property_exists($Input,'Extensions') && is_array($Input->Extensions))
-		$this->Extensions->SetData($Input->Extensions);
+		if(is_object($Input))
+		foreach($CopyKeys as $Key)
+		if(property_exists($Input,$Key)) {
+			if(is_array($Input->{$Key}))
+			$this->{$Key}->SetData($Input->{$Key});
 
-		if(property_exists($Input,'Formats') && is_array($Input->Formats))
-		$this->Formats->SetData($Input->Formats);
-
-		if(property_exists($Input,'OutputFile') && is_string($Input->OutputFile))
-		$this->OutputFile = $Input->OutputFile;
-
-		if(property_exists($Input,'OutputDir') && is_string($Input->OutputDir))
-		$this->OutputDir = $Input->OutputDir;
+			elseif(is_string($Input->{$Key}))
+			$this->{$Key} = $Input->{$Key};
+		}
 
 		return;
 	}
@@ -135,9 +165,12 @@ implements JsonSerializable {
 	Array {
 
 		return [
-			'OutputFile' => $this->OutputFile,
-			'Paths'      => $this->Paths->Reindex()->GetData(),
-			'Extensions' => $this->Extensions->Reindex()->GetData()
+			'ProjectName' => $this->ProjectName,
+			'OutputFile'  => $this->OutputFile,
+			'OutputDir'   => $this->OutputDir,
+			'Formats'     => $this->Formats->GetData(),
+			'Paths'       => $this->Paths->Reindex()->GetData(),
+			'Extensions'  => $this->Extensions->Reindex()->GetData()
 		];
 	}
 

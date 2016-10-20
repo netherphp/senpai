@@ -129,6 +129,22 @@ the command line interface to get noticed by senpai.
 		return 0;
 	}
 
+	public function
+	HandleUpdate():
+	Int {
+
+		$Filename = $this->GetFilename();
+		$File = basename($Filename);
+		$Dir = dirname($Filename);
+
+
+		$this::Message("Updating {$File}");
+		$Config = Nether\Senpai\Config::GetFromFile($Filename);
+		$Config->Write();
+
+		return 0;
+	}
+
 	protected function
 	GetFilename():
 	String {
