@@ -114,14 +114,13 @@ class Renderer {
 	self {
 
 		$Printer = NULL;
-		$OutputDir = $this->GetConfig()->GetOutputDir();
 
 		$Printer = function(Nether\Senpai\Struct $Struct, Int $Level=1)
-		use(&$Printer,$OutputDir) {
+		use(&$Printer) {
 
 			$File = sprintf(
 				'%s%s%s',
-				$OutputDir,
+				$this->GetConfig()->GetOutputDir(),
 				DIRECTORY_SEPARATOR,
 				$Struct->GetAbsolutePath($Struct->GetRenderFilename('html'))
 			);
@@ -134,6 +133,8 @@ class Renderer {
 			@mkdir($Dir,0777,TRUE);
 
 			touch($File);
+
+			echo "Writing {$File}", PHP_EOL;
 
 			////////
 
@@ -168,20 +169,24 @@ class Renderer {
 
 			file_put_contents($File,$Surface->Render(TRUE));
 			unset($Surface);
-			echo "Wrote {$File}", PHP_EOL;
 
 			////////
 
 			if($Struct instanceof NamespaceObject) {
-				foreach($Struct->GetNamespaces() as $Struck)
+				foreach($Struct->GetNamespaces()->GetData() as $Struck)
 				$Printer($Struck,($Level + 1));
 
-				foreach($Struct->GetClasses() as $Struck)
-				$Printer($Struck,$Level);
+				foreach($Struct->GetClasses()->GetData() as $Struck) {
+					$Printer($Struck,$Level);
+				}
 			}
+
+			////////
+			return;
 		};
 
 		$Printer($this->Root);
+
 		return $this;
 	}
 

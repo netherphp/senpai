@@ -108,6 +108,10 @@ the command line interface to get noticed by senpai.
 	public function
 	HandleRender():
 	Int {
+	/*//
+	this will handle rendering out the compiled data into the various human
+	readable formats.
+	//*/
 
 		$Filename = $this->GetFilename();
 		$File = basename($Filename);
@@ -132,11 +136,13 @@ the command line interface to get noticed by senpai.
 	public function
 	HandleUpdate():
 	Int {
+	/*//
+	this will handle updating a project file to add any missing values.
+	//*/
 
 		$Filename = $this->GetFilename();
 		$File = basename($Filename);
 		$Dir = dirname($Filename);
-
 
 		$this::Message("Updating {$File}");
 		$Config = Nether\Senpai\Config::GetFromFile($Filename);
