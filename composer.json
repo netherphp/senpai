@@ -1,28 +1,10 @@
 {
-	"name": "netherphp/senpai",
-	"description": "A documentation engine.",
-	"keywords": [ "php", "documentation" ],
-	"license": "BSD-2-Clause",
-	"authors": [
-		{
-			"name":"Bob Majdak Jr",
-			"email":"bob@nether.io",
-			"homepage":"http://nether.io",
-			"role":"developer"
-		}
-	],
 	"require": {
-		"php": ">=7.0.0",
-		"nikic/php-parser": "dev-master",
-		"netherphp/surface": "~2.1",
-		"netherphp/console": "~2.0"
+		"nikic/php-parser": "^4.0"
 	},
-	"autoload":{
+	"autoload": {
 		"psr-0": {
-			"Nether\\": "src/"
+			"Nether\\": "src//"
 		}
-	},
-	"bin": [
-		"bin/senpai"
-	]
+	}
 }
