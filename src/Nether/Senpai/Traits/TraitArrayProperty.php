@@ -22,4 +22,24 @@ trait TraitArrayProperty {
 		return $this;
 	}
 
+	public function
+	MergeTraits(Array $Input):
+	self {
+
+		$this->Traits = array_merge(
+			$this->Traits,
+			$Input
+		);
+
+		return $this;
+	}
+
+	public function
+	SortTraits():
+	self {
+
+		ksort($this->Traits);
+		return $this;
+	}
+
 }

@@ -38,10 +38,10 @@ extends Parser\NodeVisitorAbstract {
 		// not really doing so.
 
 		if($Statement instanceof Statements\MethodStatement) {
-			echo "Method: {$this->LineNumber}", PHP_EOL;
+			//echo "Method: {$this->LineNumber}", PHP_EOL;
 			if($Statement->GetData()->GetReturnType()) {
 				$this->LineNumber = $Statement->GetData()->GetReturnType()->GetLine();
-				echo "ReturnType: {$this->LineNumber}", PHP_EOL;
+				//echo "ReturnType: {$this->LineNumber}", PHP_EOL;
 			}
 
 			elseif(count($Statement->GetData()->GetParams())) {
@@ -49,7 +49,7 @@ extends Parser\NodeVisitorAbstract {
 				end($Args);
 
 				$this->LineNumber = current($Args)->GetLine();
-				echo "LastParam: {$this->LineNumber}", PHP_EOL;
+				//echo "LastParam: {$this->LineNumber}", PHP_EOL;
 				unset($Args);
 			}
 		}

@@ -13,4 +13,15 @@ class ClassStatement {
 	use Traits\CommentArrayProperty;
 	use Traits\MethodArrayProperty;
 
+	public function
+	GetFullName():
+	String {
+
+		return sprintf(
+			'%s\\%s',
+			$this->Namespace->GetName(),
+			$this->GetName()
+		);
+	}
+
 }

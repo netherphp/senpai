@@ -88,7 +88,7 @@ extends Parser\NodeVisitorAbstract {
 
 		// parse the data and attach it to the namespace.
 
-		$this->Namespace->SetCOmments($Comments->GetComments());
+		$this->Namespace->SetComments($Comments->GetComments());
 		$this->Namespace->SetTraits($Traits->GetTraits());
 		$this->Namespace->SetClasses($Classes->GetClasses());
 		$this->Namespace->SetData(NULL);

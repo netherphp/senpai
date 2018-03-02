@@ -22,4 +22,24 @@ trait ClassArrayProperty {
 		return $this;
 	}
 
+	public function
+	MergeClasses(Array $Input):
+	self {
+
+		$this->Classes = array_merge(
+			$this->Classes,
+			$Input
+		);
+
+		return $this;
+	}
+
+	public function
+	SortClasses():
+	self {
+
+		ksort($this->Classes);
+		return $this;
+	}
+
 }

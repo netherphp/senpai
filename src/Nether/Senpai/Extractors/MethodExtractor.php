@@ -23,12 +23,15 @@ extends Parser\NodeVisitorAbstract {
 	LeaveNode(Parser\Node $Node):
 	Void {
 
-		if($Node instanceof Parser\Node\Stmt\ClassMethod)
-		($this->Methods[] = new Statements\MethodStatement)
-		->SetClass($this->Class)
-		->SetName($Node->name->ToString())
-		->SetLineNumber($Node->GetLine())
-		->SetData($Node);
+		if($Node instanceof Parser\Node\Stmt\ClassMethod) {
+			($Method = new Statements\MethodStatement)
+			->SetClass($this->Class)
+			->SetName($Node->name->ToString())
+			->SetLineNumber($Node->GetLine())
+			->SetData($Node);
+
+			$this->Methods[$Method->GetName()] = $Method;
+		}
 
 		return;
 	}

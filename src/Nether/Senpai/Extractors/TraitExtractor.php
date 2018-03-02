@@ -5,28 +5,29 @@ namespace Nether\Senpai\Extractors;
 use \PhpParser                as Parser;
 use \Nether\Senpai\Statements as Statements;
 use \Nether\Senpai\Extractors as Extractors;
+use \Nether\Senpai\Traits     as Traits;
 
 class TraitExtractor
 extends Parser\NodeVisitorAbstract {
 
-	protected
-	$Traits = [];
+	use Traits\NamespaceProperty;
+	use Traits\TraitArrayProperty;
 
 	public function
-	GetTraits():
-	Array {
-
-		return $this->Traits;
+	__construct(Statements\NamespaceStatement $Namespace) {
+		$this->Namespace = $Namespace;
+		return;
 	}
 
 	public function
-	LeaveNode(Parser\Node $Node):
+	EnterNode(Parser\Node $Node):
 	Void {
 
 		if($Node instanceof Parser\Node\Stmt\Trait_) {
-			$Trait = new Statements\TraitStatement;
-			$Trait->SetName($Node->name->ToString());
-			$Trait->SetLineNumber($Node->GetLine());
+			($Trait = new Statements\TraitStatement)
+			->SetNamespace($this->Namespace)
+			->SetName($Node->name->ToString())
+			->SetLineNumber($Node->GetLine());
 
 			$Walker = new Parser\NodeTraverser;
 			$Comments = new Extractors\SenpaiCommentExtractor($Trait);

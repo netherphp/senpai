@@ -29,12 +29,15 @@ extends Parser\NodeVisitorAbstract {
 	EnterNode(Parser\Node $Node):
 	Void {
 
-		if($Node instanceof Parser\Node\Stmt\Class_)
-		($this->Classes[] = new Statements\ClassStatement)
-		->SetNamespace($this->Namespace)
-		->SetName($Node->name->ToString())
-		->SetLineNumber($Node->GetLine())
-		->SetData($Node);
+		if($Node instanceof Parser\Node\Stmt\Class_) {
+			($Class = new Statements\ClassStatement)
+			->SetNamespace($this->Namespace)
+			->SetName($Node->name->ToString())
+			->SetLineNumber($Node->GetLine())
+			->SetData($Node);
+
+			$this->Classes[$Class->GetFullName()] = $Class;
+		}
 
 		return;
 	}
