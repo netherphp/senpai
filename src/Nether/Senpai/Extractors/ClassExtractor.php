@@ -3,6 +3,7 @@
 namespace Nether\Senpai\Extractors;
 
 use \PhpParser                as Parser;
+use \Nether                   as Nether;
 use \Nether\Senpai\Statements as Statements;
 use \Nether\Senpai\Extractors as Extractors;
 use \Nether\Senpai\Traits     as Traits;
@@ -10,6 +11,7 @@ use \Nether\Senpai\Traits     as Traits;
 class ClassExtractor
 extends Parser\NodeVisitorAbstract {
 
+	use Traits\FileProperty;
 	use Traits\NamespaceProperty;
 	use Traits\ClassArrayProperty;
 
@@ -17,8 +19,9 @@ extends Parser\NodeVisitorAbstract {
 	////////////////////////////////////////////////////////////////
 
 	public function
-	__construct(Statements\NamespaceStatement $Namespace) {
+	__construct(Statements\NamespaceStatement $Namespace, Nether\Senpai\FileReader $File) {
 		$this->Namespace = $Namespace;
+		$this->File = $File;
 		return;
 	}
 
@@ -49,18 +52,15 @@ extends Parser\NodeVisitorAbstract {
 		foreach($this->Classes as $Class) {
 			$Walker = new Parser\NodeTraverser;
 			$Reader = new Parser\NodeTraverser;
-			$Methods = new Extractors\MethodExtractor($Class);
-			$Comments = new Extractors\SenpaiCommentExtractor($Class);
+			$Methods = new Extractors\MethodExtractor($Class,$this->GetFile());
+			$Comments = new Extractors\SenpaiCommentExtractor($Class,$this->GetFile());
 
 			$Walker->AddVisitor($Methods);
 			$Walker->Traverse($Class->GetData()->stmts);
 
-			$Reader->AddVisitor($Comments);
-			$Reader->Traverse($Class->GetData()->stmts);
-
 			$Class
 			->SetMethods($Methods->GetMethods())
-			->SetComments($Comments->GetComments())
+			->SetAnnotation(Nether\Senpai\Annotation::FromString($Comments))
 			->SetData(NULL);
 		}
 

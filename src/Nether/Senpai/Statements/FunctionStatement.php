@@ -2,11 +2,10 @@
 
 namespace Nether\Senpai\Statements;
 
-use \Nether                   as Nether;
-use \Nether\Senpai\Traits     as Traits;
-use \Nether\Senpai\Interfaces as Interfaces;
+use \Nether               as Nether;
+use \Nether\Senpai\Traits as Traits;
 
-class TraitStatement
+class FunctionStatement
 extends Nether\Senpai\Statement {
 
 	use Traits\NamespaceProperty;
@@ -15,7 +14,6 @@ extends Nether\Senpai\Statement {
 	use Traits\DataProperty;
 	use Traits\AnnotationProperty;
 	use Traits\CommentArrayProperty;
-	use Traits\MethodArrayProperty;
 
 	public function
 	GetFullName():

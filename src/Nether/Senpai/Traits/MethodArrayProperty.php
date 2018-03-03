@@ -22,4 +22,24 @@ trait MethodArrayProperty {
 		return $this;
 	}
 
+	public function
+	MergeMethods(Array $Input):
+	self {
+
+		$this->Methods = array_merge(
+			$this->Methods,
+			$Input
+		);
+
+		return $this;
+	}
+
+	public function
+	SortMethods():
+	self {
+
+		ksort($this->Methods);
+		return $this;
+	}
+
 }

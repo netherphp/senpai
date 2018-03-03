@@ -3,6 +3,7 @@
 namespace Nether\Senpai\Extractors;
 
 use \PhpParser                as Parser;
+use \Nether                   as Nether;
 use \Nether\Senpai\Traits     as Traits;
 use \Nether\Senpai\Statements as Statements;
 use \Nether\Senpai\Extractors as Extractors;
@@ -10,12 +11,14 @@ use \Nether\Senpai\Extractors as Extractors;
 class MethodExtractor
 extends Parser\NodeVisitorAbstract {
 
+	use Traits\FileProperty;
 	use Traits\NamespaceProperty;
 	use Traits\MethodArrayProperty;
 
 	public function
-	__construct(Statements\ClassStatement $Class) {
+	__construct(Nether\Senpai\Statement $Class, Nether\Senpai\FileReader $File) {
 		$this->Class = $Class;
+		$this->File = $File;
 		return;
 	}
 
@@ -30,6 +33,24 @@ extends Parser\NodeVisitorAbstract {
 			->SetLineNumber($Node->GetLine())
 			->SetData($Node);
 
+			if($Node->IsAbstract())
+			$Method->EnableFlags(Statements\MethodStatement::IsAbstract);
+
+			if($Node->IsStatic())
+			$Method->EnableFlags(Statements\MethodStatement::IsStatic);
+
+			if($Node->IsFinal())
+			$Method->EnableFlags(Statements\MethodStatement::IsFinal);
+
+			if($Node->IsPublic())
+			$Method->EnableFlags(Statements\MethodStatement::IsPublic);
+
+			if($Node->IsProtected())
+			$Method->EnableFlags(Statements\MethodStatement::IsProtected);
+
+			if($Node->IsPrivate())
+			$Method->EnableFlags(Statements\MethodStatement::IsPrivate);
+
 			$this->Methods[$Method->GetName()] = $Method;
 		}
 
@@ -42,13 +63,10 @@ extends Parser\NodeVisitorAbstract {
 
 		foreach($this->Methods as $Method) {
 			$Reader = new Parser\NodeTraverser;
-			$Comments = new Extractors\SenpaiCommentExtractor($Method);
-
-			$Reader->AddVisitor($Comments);
-			$Reader->Traverse($Method->GetData()->stmts);
+			$Comments = new Extractors\SenpaiCommentExtractor($Method,$this->File);
 
 			$Method
-			->SetComments($Comments->GetComments())
+			->SetAnnotation(Nether\Senpai\Annotation::FromString($Comments))
 			->SetData(NULL);
 		}
 

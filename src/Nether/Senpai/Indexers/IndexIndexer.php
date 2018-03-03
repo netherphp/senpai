@@ -35,6 +35,8 @@ class IndexIndexer {
 
 		$Output = [];
 
+		// merge all the namespaces into a single tree.
+
 		foreach($this->Namespaces as $Namespace) {
 			if(!array_key_exists($Namespace->GetName(),$Output)) {
 				$Output[$Namespace->GetName()] = $Namespace;
@@ -44,14 +46,31 @@ class IndexIndexer {
 			else {
 				$Output[$Namespace->GetName()]
 				->MergeClasses($Namespace->GetClasses())
-				->SortClasses()
-				->MergeTraits($Namespace->GetTraits())
-				->SortTraits();
+				->MergeTraits($Namespace->GetTraits());
+			}
+		}
+
+		// unify the namespace object references, sort classes n stuff.
+
+		foreach($this->Namespaces as $Namespace) {
+			$Namespace
+			->SortClasses()
+			->SortTraits();
+
+			foreach($Namespace->GetClasses() as $Class) {
+				$Class
+				->SetNamespace($Namespace)
+				->SortMethods();
+			}
+
+			foreach($Namespace->GetTraits() as $Trait) {
+				$Trait
+				->SetNamespace($Namespace)
+				->SortMethods();
 			}
 		}
 
 		ksort($Output);
-
 		return $Output;
 	}
 

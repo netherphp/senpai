@@ -3,6 +3,7 @@
 namespace Nether\Senpai\Indexers;
 
 use \PhpParser                as Parser;
+use \Nether                   as Nether;
 use \Nether\Senpai\Extractors as Extractors;
 use \Nether\Senpai\Statements as Statements;
 use \Nether\Senpai\Indexers   as Indexers;
@@ -41,8 +42,11 @@ class FileIndexer {
 		list($Parser,$Walker,$Extractor) =
 		$this->Run_PrepareFileObjects();
 
+		$File = new Nether\Senpai\FileReader($this->Filename);
+		$Extractor->SetFile($File);
+
 		$Walker->Traverse($Parser->Parse(
-			file_get_contents($this->Filename)
+			$File->GetData()
 		));
 
 		return $Extractor;
@@ -69,7 +73,18 @@ class FileIndexer {
 	Array {
 
 		$Parser = (new Parser\ParserFactory)
-		->Create(Parser\ParserFactory::PREFER_PHP7);
+		->Create(
+			Parser\ParserFactory::PREFER_PHP7,
+			new Parser\Lexer([
+				'usedAttributes' => [
+					'comments',
+					'startLine',
+					'endLine',
+					'startTokenPos',
+					'endTokenPos'
+				]
+			])
+		);
 
 		$Walker = new Parser\NodeTraverser;
 		$Extractor = new Extractors\FileExtractor;

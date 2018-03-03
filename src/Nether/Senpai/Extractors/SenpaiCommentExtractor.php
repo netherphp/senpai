@@ -3,10 +3,12 @@
 namespace Nether\Senpai\Extractors;
 
 use \PhpParser                as Parser;
+use \Nether\Senpai\Traits     as Traits;
 use \Nether\Senpai\Statements as Statements;
 
-class SenpaiCommentExtractor
-extends Parser\NodeVisitorAbstract {
+class SenpaiCommentExtractor {
+
+	use Traits\FileProperty;
 
 	protected
 	$Statement = NULL;
@@ -28,9 +30,10 @@ extends Parser\NodeVisitorAbstract {
 	////////////////////////////////////////////////////////////////
 
 	public function
-	__construct($Statement) {
+	__construct($Statement, $File) {
 		$this->Statement = $Statement;
 		$this->LineNumber = $Statement->GetLineNumber();
+		$this->File = $File;
 
 		// here we mess with the line numbers to handle people who like
 		// to format slightly different, and the parser itself shows
@@ -54,26 +57,41 @@ extends Parser\NodeVisitorAbstract {
 			}
 		}
 
+		for($Fuzz = 0; $Fuzz <= 3; $Fuzz++) {
+			$Key = $this->LineNumber + $Fuzz;
+			if(array_key_exists($Key,$this->File->GetComments())) {
+				$this->Comments[$Key] = $this->File->GetComments()[$Key];
+				break;
+			}
+		}
+
 		return;
-	}
 
-	////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////
-
-
-	public function
-	EnterNode(Parser\Node $Node) {
-
-		foreach($Node->GetComments() as $Comment) {
-			for($Fuzz = 0; $Fuzz <= 2; $Fuzz++) {
-				if($Comment->GetLine() === ($this->LineNumber + $Fuzz)) {
-					$this->Comments[$Comment->GetLine()] = trim($Comment->GetText());
-					return Parser\NodeTraverser::STOP_TRAVERSAL;
+		foreach($this->File->GetComments() as $Line => $Comment) {
+			for($Fuzz = 0; $Fuzz <= 3; $Fuzz++) {
+				if($Line === ($this->LineNumber + $Fuzz)) {
+					$this->Comments[$Line] = trim($Comment);
+					break;
 				}
 			}
 		}
 
 		return;
 	}
+
+	public function
+	__toString():
+	String {
+
+		if(count($this->Comments)) {
+			reset($this->Comments);
+			return current($this->Comments);
+		}
+
+		return '';
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
 
 }

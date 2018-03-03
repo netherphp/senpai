@@ -12,6 +12,14 @@ $Finder = NULL;
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+$Files = [
+	//'class.php',
+	//'src/Nether/Senpai/Statement.php',
+	//'src/Nether/Senpai/Statements/ClassStatement.php',
+	//'src/Nether/Senpai/Statements/MethodStatement.php'
+];
+
+
 $Directory = new RecursiveDirectoryIterator(
 	'src',
 	FilesystemIterator::SKIP_DOTS
@@ -26,8 +34,10 @@ foreach($Finder as $File) {
 	$Files[] = $File->GetPathname();
 }
 
+/*
 print_r($Files);
 echo PHP_EOL;
+*/
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,14 +56,45 @@ foreach($Files as $File) {
 
 $Namespaces = $Indexer->Run();
 foreach($Namespaces as $Namespace) {
-	echo "Namespace: {$Namespace->GetName()}", PHP_EOL;
+	echo PHP_EOL;
+
+	echo "namespace\n{$Namespace->GetName()} {\n", PHP_EOL;
 
 	foreach($Namespace->GetTraits() as $Trait) {
-		echo "    Trait: {$Trait->GetFullName()}", PHP_EOL;
+		echo "\ttrait\n\t{$Trait->GetName()} {\n", PHP_EOL;
+
+		if($Trait->GetAnnotation()->GetData())
+		echo "\t\t".str_replace("\n","\n\t\t",$Trait->GetAnnotation()->GetData())."\n\n";
+
+		foreach($Trait->GetMethods() as $Method) {
+			echo "\t\tmethod {$Method->GetAccessWords()}\n";
+			echo "\t\t{$Method->GetName()};\n", PHP_EOL;
+
+			if($Method->GetAnnotation()->GetData())
+			echo "\t\t".str_replace("\n","\n\t\t",$Method->GetAnnotation()->GetData())."\n\n";
+		}
+
+		echo "\t};\n", PHP_EOL;
 	}
 
 	foreach($Namespace->GetClasses() as $Class) {
-		echo "    Class: {$Class->GetFullName()}", PHP_EOL;
+		echo "\tclass\n\t{$Class->GetName()} {\n", PHP_EOL;
+
+		if($Class->GetAnnotation()->GetData())
+		echo "\t\t".str_replace("\n","\n\t\t",$Class->GetAnnotation()->GetData())."\n\n";
+
+		foreach($Class->GetMethods() as $Method) {
+			echo "\t\tmethod {$Method->GetAccessWords()}\n";
+			echo "\t\t{$Method->GetName()};\n", PHP_EOL;
+
+			if($Method->GetAnnotation()->GetData())
+			echo "\t\t".str_replace("\n","\n\t\t",$Method->GetAnnotation()->GetData())."\n\n";
+		}
+
+		echo "\t};\n", PHP_EOL;
 	}
+	echo "};\n";
+
+	echo PHP_EOL;
 }
 

@@ -3,6 +3,7 @@
 namespace Nether\Senpai\Extractors;
 
 use \PhpParser                as Parser;
+use \Nether                   as Nether;
 use \Nether\Senpai\Extractors as Extractors;
 use \Nether\Senpai\Statements as Statements;
 use \Nether\Senpai\Traits     as Traits;
@@ -10,6 +11,7 @@ use \Nether\Senpai\Traits     as Traits;
 class FileExtractor
 extends Parser\NodeVisitorAbstract {
 
+	use Traits\FileProperty;
 	use Traits\NamespaceProperty;
 
 	////////////////////////////////////////////////////////////////
@@ -60,9 +62,9 @@ extends Parser\NodeVisitorAbstract {
 
 		$Walker = new Parser\NodeTraverser;
 		$Reader = new Parser\NodeTraverser;
-		$Classes = new Extractors\ClassExtractor($this->Namespace);
-		$Traits = new Extractors\TraitExtractor($this->Namespace);
-		$Comments = new Extractors\SenpaiCommentExtractor($this->Namespace);
+		$Classes = new Extractors\ClassExtractor($this->Namespace,$this->GetFile());
+		$Traits = new Extractors\TraitExtractor($this->Namespace,$this->GetFile());
+		$Comments = new Extractors\SenpaiCommentExtractor($this->Namespace,$this->GetFile());
 
 		// walk the codebase to find structures we expect to find in
 		// within namespaces.
@@ -70,17 +72,6 @@ extends Parser\NodeVisitorAbstract {
 		$Walker->AddVisitor($Traits);
 		$Walker->AddVisitor($Classes);
 		$Walker->Traverse(
-			($this->GetNamespace())
-			->GetData()
-			->stmts
-		);
-
-		// locate the senpai codeblock if it exists. we use a separate
-		// traverser because the senpai one bails as soon as it can to try
-		// and save time.
-
-		$Reader->AddVisitor($Comments);
-		$Reader->Traverse(
 			($this->GetNamespace())
 			->GetData()
 			->stmts
